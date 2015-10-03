@@ -6,10 +6,10 @@ def sendMsg(comando):
   serverName = '192.168.0.1'
   serverPort = 9003 #aqui, temos 9000 + X, sendo X o número do grupo. Mas não sei que número é nosso grupo
   clientSocket = socket(AF_INET,SOCK_STREAM)
-  try:
+  try: #tentativa de conexão com o servidor
     clientSocket.connect ((serverName, serverPort))
     if comando:
-      #envio do comando recebido para o servidor
+      #envio do comando recebido para o servidor... comando TRY..EXCEPT
       clientSocket.send(comando)
       #devo limpar o comando
       comando = ""
@@ -18,7 +18,7 @@ def sendMsg(comando):
     else:
       dados = "Impossível gerar comando!"
     clientSocket.close()
-  except Excecao:
+  except Excecao: #caso a conexão com socket tiver fechado ou não tiver sido feita
     dados = "Socket sem conexão!!"
     
     return dados
