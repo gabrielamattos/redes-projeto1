@@ -1,7 +1,8 @@
 #!/usr/bin/python
 
 import cgi, cgitb
-
+#devo importar o código do backend aqui no webServer
+import backend.py
 # Criando uma instancia de FieldStorage
 form = cgi.FieldStorage()
 
