@@ -31,7 +31,6 @@
 					<input type="checkbox" name="selUpTimeM3" value="uptime">uptime<br />
 				</div>			
 			</form>
-			<br/>
 			<input type="button" name="botM1" value="Enviar Comandos">
 		</div> <br />
 
