@@ -13,15 +13,15 @@ def sendMsg(comando):
       clientSocket.send(comando)
       #devo limpar o comando
       comando = ""
-      dados = clientSocket.rcv(1024)
-      dados = validacaoDosDados(dados)
+      dados = clientSocket.rcv(1024) #recebo o comando dp servidor
+      dados = validacaoDosDados(dados) #valido se é uma resposta coerente
     else:
       dados = "Impossível gerar comando!"
     clientSocket.close()
   except Excecao: #caso a conexão com socket tiver fechado ou não tiver sido feita
     dados = "Socket sem conexão!!"
     
-    return dados
+return dados
     
   def validacaoDosDados(msgRecebida):
     lista = msgRecebida.split() #comando split() separa cada palavra contida na mensagem
