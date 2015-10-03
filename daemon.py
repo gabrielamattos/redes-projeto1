@@ -4,14 +4,15 @@
 # 	Objetivo: Daemon que representa o socket no lado servidor, com intuito de pegar a mensagem, eliminar    #
 # comandos maliciosos e traduzir o número do comando para seu equivalente, além garantir a execução do comando. #
 # 	Referências:												#
-# - http://www.cyberciti.biz/faq/python-execute-unix-linux-command-examples/								#
-# - https://docs.python.org/3/library/subprocess.html#subprocess.Popen									#
+# - http://www.cyberciti.biz/faq/python-execute-unix-linux-command-examples/					#
+# - https://docs.python.org/3/library/subprocess.html#subprocess.Popen	 					#
+# - http://wiki.python.org.br/SocketBasico									#
 #################################################################################################################
 
 from socket import *
-
 import subprocess
 import string
+import os
 
 #Estabelecendo a porta
 serverPort = 9003
