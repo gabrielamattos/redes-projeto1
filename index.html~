@@ -8,31 +8,31 @@
 	<body id="body">
 		<div id="Maquinas">
 			<p>Selecione os comandos desejados nas máquinas desejadas e escreva os argumentos ao lado</p>
-			<form id="form1">
+			<form id="form1" action="/cgi-bin/webserver.py" method="POST" target="_blank>
 				<div id="Maq1">
 				<p> Máquina 1 </p>
-					<input type="checkbox" name="selPsM1" value="ps">ps  <input type="text" name="ArgPsM1" value=""><br />
-					<input type="checkbox" name="selDsM1" value="ds">ds <input type="text" name="ArgDsM1" value=""><br />
-					<input type="checkbox" name="selFingerM1" value="finger">finger <input type="text" name="ArgFingerM1" value=""><br />
-					<input type="checkbox" name="selUpTimeM1" value="uptime">uptime <input type="text" name="ArgUptimeM1" value=""><br />
+					<input type="checkbox" id="selPsM1" value="ps">ps  <input type="text" id="ArgPsM1" value=""><br />
+					<input type="checkbox" id="selDsM1" value="ds">ds <input type="text" id="ArgDsM1" value=""><br />
+					<input type="checkbox" id="selFingerM1" value="finger">finger <input type="text" id="ArgFingerM1" value=""><br />
+					<input type="checkbox" id="selUpTimeM1" value="uptime">uptime <input type="text" id="ArgUptimeM1" value=""><br />
 				</div>
 				<div id="Maq2">
 				<p> Máquina 2 </p>
-					<input type="checkbox" name="selPsM2" value="ps">ps  <input type="text" name="ArgPsM2" value=""><br />
-					<input type="checkbox" name="selDsM2" value="ds">ds <input type="text" name="ArgDsM2" value=""><br />
-					<input type="checkbox" name="selFingerM2" value="finger">finger <input type="text" name="ArgFingerM2" value=""><br />
-					<input type="checkbox" name="selUpTimeM2" value="uptime">uptime <input type="text" name="ArgUptimeM2" value=""><br />
+					<input type="checkbox" id="selPsM2" value="ps">ps  <input type="text" id="ArgPsM2" value=""><br />
+					<input type="checkbox" id="selDsM2" value="ds">ds <input type="text" id="ArgDsM2" value=""><br />
+					<input type="checkbox" id="selFingerM2" value="finger">finger <input type="text" id="ArgFingerM2" value=""><br />
+					<input type="checkbox" id="selUpTimeM2" value="uptime">uptime <input type="text" id="ArgUptimeM2" value=""><br />
 				</div>
 				<div id="Maq3">
 				<p> Máquina 3 </p>
-					<input type="checkbox" name="selPsM3" value="ps">ps  <input type="text" name="ArgPsM3" value=""><br />
-					<input type="checkbox" name="selDsM3" value="ds">ds <input type="text" name="ArgDsM3" value=""><br />
-					<input type="checkbox" name="selFingerM3" value="finger">finger <input type="text" name="ArgFingerM3" value=""><br />
-					<input type="checkbox" name="selUpTimeM3" value="uptime">uptime <input type="text" name="ArgUptimeM3" value=""><br />
+					<input type="checkbox" id="selPsM3" value="ps">ps  <input type="text" id="ArgPsM3" value=""><br />
+					<input type="checkbox" id="selDsM3" value="ds">ds <input type="text" id="ArgDsM3" value=""><br />
+					<input type="checkbox" id="selFingerM3" value="finger">finger <input type="text" id="ArgFingerM3" value=""><br />
+					<input type="checkbox" id="selUpTimeM3" value="uptime">uptime <input type="text" id="ArgUptimeM3" value=""><br />
 				</div>		
 			</form>
 			<br/>
-			<input type="submit" name="botM1" value="Enviar Comandos">
+			<input type="submit" id="botM1" value="Enviar Comandos">
 		</div> <br />
 
 		
