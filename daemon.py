@@ -28,46 +28,42 @@ def conexao(con, cliente):
 	f = "2 "
 	g = "3 "
 	h = "4 "
-	while 1:
-		#Recebe a sentença do cliente
-		sentence = connectionSocket.recv(1024)
-		if len(sentence) > 10:
-			menos = "-"
-		else:
-			menos = ""
-		if not msg: 
-			break
-		else:
-			#fazendo as substituicoes necessarias nos padrões
-			sentence = sentence.replace("REQUEST ","")
-			if a in sentence:
-				sentence = sentence.replace(a,"")
-			if b in sentence:
-				sentence = sentence.replace(b,"")
-			if c in sentence:
-				sentence = sentence.replace(c,"")
-			if d in sentence:
-				sentence = sentence.replace(d,"")
-			if e in sentence:
-				sentence = sentence.replace(e,"ps "+menos)
-				numero = e
-			if f in sentence:
-				sentence = sentence.replace(f,"ds "+menos)
-				numero = f
-			if g in sentence:
-				sentence = sentence.replace(g,"finger "+menos)
-				numero = g
-			if h in sentence:
-				sentence = sentence.replace(h,"uptime "+menos)
-				numero = h
-			#executando um processo filho com Ponpen, passando a sentença tratada como parametro
-			comando = subprocess.Popen(sentence, stdout=subprocess.PIPE, shell=True)
-			#associando a saida com uma variavel de saida
-			(resposta, err) = comando.communicate()
-			#formulando o cabeçalo de reposta de acordo com o padrão
-			resposta = "RESPONSE " + numero + resposta
-			#enviando a resposta
-			connectionSocket.send(resposta)
+	#Recebe a sentença do cliente
+	sentence = connectionSocket.recv(1024)
+	if len(sentence) > 10:
+		menos = "-"
+	else:
+		menos = ""
+	#fazendo as substituicoes necessarias nos padrões
+	sentence = sentence.replace("REQUEST ","")
+	if a in sentence:
+		sentence = sentence.replace(a,"")
+	if b in sentence:
+		sentence = sentence.replace(b,"")
+	if c in sentence:
+		sentence = sentence.replace(c,"")
+	if d in sentence:
+		sentence = sentence.replace(d,"")
+	if e in sentence:
+		sentence = sentence.replace(e,"ps "+menos)
+		numero = e
+	if f in sentence:
+		sentence = sentence.replace(f,"ds "+menos)
+		numero = f
+	if g in sentence:
+		sentence = sentence.replace(g,"finger "+menos)
+		numero = g
+	if h in sentence:
+		sentence = sentence.replace(h,"uptime "+menos)
+		numero = h
+	#executando um processo filho com Ponpen, passando a sentença tratada como parametro
+	comando = subprocess.Popen(sentence, stdout=subprocess.PIPE, shell=True)
+	#associando a saida com uma variavel de saida
+	(resposta, err) = comando.communicate()
+	#formulando o cabeçalo de reposta de acordo com o padrão
+	resposta = "RESPONSE " + numero + resposta
+	#enviando a resposta
+	connectionSocket.send(resposta)
 	#fechando a conexão
 	connectionSocket.close()	
 	thread.exit()
