@@ -1,7 +1,6 @@
 #################################################################################################################
-# 	Nome: daemon.py											#
-# 	Autor: Rodolfo Barcelar											#
-#	Contribuição: Gabriela Mattos										#
+# 	Nome: daemon.py												#
+# 	Autor: Breno Souza											#
 # 	Objetivo: funciona como um cliente, ou seja, pega o valor passado pelo WebServer e envia para os 	#
 # computadores os executarem.											#
 # 	Referências:												#
