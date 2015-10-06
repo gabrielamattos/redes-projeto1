@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+
 #################################################################################################################
 # 	Nome: daemon.py												#
-# 	Autor: Breno da Silveira Souza										#										#
+# 	Autor: Breno da Silveira Souza										#														#
 # 	Objetivo: Daemon que representa o socket no lado servidor, com intuito de pegar a mensagem, eliminar    #
-# comandos maliciosos e traduzir o número do comando para seu equivalente, além garantir a execução do comando. #
-# 	Referências:												#
+# comandos maliciosos e traduzir o numero do comando para seu equivalente, alem garantir a execucao do comando. #
+# 	Referencias:												#
 # - http://www.cyberciti.biz/faq/python-execute-unix-linux-command-examples/					#
 # - https://docs.python.org/3/library/subprocess.html#subprocess.Popen	 					#
 # - http://wiki.python.org.br/SocketBasico									#
@@ -19,7 +20,7 @@ import thread
 serverPort = 9003
 
 def conexao(con, cliente):
-	#estabelecendo os padrões a serem procurados na string, os 4 primeiros devem ser ignorados, os 4 ultimos substituidos
+	#estabelecendo os padroes a serem procurados na string, os 4 primeiros devem ser ignorados, os 4 ultimos substituidos
 	#pelo comando equivalente
 	a = "|"
 	b = ";"
@@ -29,13 +30,13 @@ def conexao(con, cliente):
 	f = "2 "
 	g = "3 "
 	h = "4 "
-	#Recebe a sentença do cliente
-	sentence = connectionSocket.recv(1024)
+	#Recebe a sentenca do cliente
+	sentence = con.recv(1024)
 	if len(sentence) > 10:
 		menos = "-"
 	else:
 		menos = ""
-	#fazendo as substituicoes necessarias nos padrões
+	#fazendo as substituicoes necessarias nos padroes
 	sentence = sentence.replace("REQUEST ","")
 	if a in sentence:
 		sentence = sentence.replace(a,"")
@@ -57,16 +58,16 @@ def conexao(con, cliente):
 	elif h in sentence:
 		sentence = sentence.replace(h,"uptime "+menos)
 		numero = h
-	#executando um processo filho com Ponpen, passando a sentença tratada como parametro
+	#executando um processo filho com Ponpen, passando a sentenca tratada como parametro
 	comando = subprocess.Popen(sentence, stdout=subprocess.PIPE, shell=True)
 	#associando a saida com uma variavel de saida
 	(resposta, err) = comando.communicate()
-	#formulando o cabeçalo de reposta de acordo com o padrão
+	#formulando o cabecalo de reposta de acordo com o padrao
 	resposta = "RESPONSE " + numero + resposta
 	#enviando a resposta
-	connectionSocket.send(resposta)
-	#fechando a conexão
-	connectionSocket.close()	
+	con.send(resposta)
+	#fechando a conexao
+	con.close()	
 	thread.exit()
 
 
@@ -80,9 +81,12 @@ serverSocket.listen(1)
 
 
 while 1:
-	#quando o cliente bate a porta, o serverSocket chama o método accept
-	#e cria um novo socket no servidor chamado connectionSocket que é dedicado a esse cliente
+	#quando o cliente bate a porta, o serverSocket chama o metodo accept
+	#e cria um novo socket no servidor chamado connectionSocket que e dedicado a esse cliente
 	connectionSocket, addr = serverSocket.accept()
 	#inicia uma nova thread para tratar requisicao do cliente
 	thread.start_new_thread(conexao, tuple([connectionSocket, addr]))
+
+
+
 
