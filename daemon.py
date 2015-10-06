@@ -47,13 +47,13 @@ def conexao(con, cliente):
 	if e in sentence:
 		sentence = sentence.replace(e,"ps "+menos)
 		numero = e
-	if f in sentence:
+	elif f in sentence:
 		sentence = sentence.replace(f,"ds "+menos)
 		numero = f
-	if g in sentence:
+	elif g in sentence:
 		sentence = sentence.replace(g,"finger "+menos)
 		numero = g
-	if h in sentence:
+	elif h in sentence:
 		sentence = sentence.replace(h,"uptime "+menos)
 		numero = h
 	#executando um processo filho com Ponpen, passando a sentença tratada como parametro
