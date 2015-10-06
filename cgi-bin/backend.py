@@ -43,13 +43,13 @@ def sendMsg(comando):
 	return dados
 
 def validacaoDosDados(msgRecebida):
-	lista = msgRecebida.split() #comando split() separa cada palavra contida na mensagem
+	
+	verificacao = msgRecebida.find('RESPONSE')
+	tam = len(msgRecebida)
 
-	if lista[0] != "RESPONSE":
-        	return "Resposta enviada eh incoerente!"
+	if verificacao != -1:
+        	return "Resposta enviada eh incoerente!"	
 
-	lista = msgRecebida.split("RESPONSE") #pega tudo que tem na mensagem recebida, menos 'RESPONSE'   
+	resposta = msgRecebida[11:tam]
 
-	return  lista[1]
-    
-
+	return  resposta
