@@ -25,25 +25,21 @@ def sendMsg(comando):
 	clientSocket = socket(AF_INET,SOCK_STREAM)
 	
 	# Tentando conectar com o servidor
-	try: 
-    		clientSocket.connect(serverName, serverPort)
-    		if comando:
-      			# Enviando o comando recebido para o servidor... comando TRY..EXCEPT
-      			clientSocket.send(comando)
-      			# Limpando o comando após o envio
-			comando = ""
-			# Recebendo o comando do servidor
-			dados = clientSocket.rcv(1024) 
-			# Validando se a resposta é coerente
-			dados = validacaoDosDados(dados) 
-		else:
-			dados = "Impossivel gerar comando!"
+	clientSocket.connect(serverName, serverPort)
+    	if comando:
+      		# Enviando o comando recebido para o servidor... comando TRY..EXCEPT
+      		clientSocket.send(comando)
+      		# Limpando o comando após o envio
+		comando = ""
+		# Recebendo o comando do servidor
+		dados = clientSocket.rcv(1024) 
+		# Validando se a resposta é coerente
+		dados = validacaoDosDados(dados) 
+	else:
+		dados = "Impossivel gerar comando!"
 
-		clientSocket.close()
+	clientSocket.close()
 
-	except Excecao: #caso a conexao com socket tiver fechado ou nao tiver sido feita
-		dados = "Socket sem conexao!"
- 
 	return dados
 
 def validacaoDosDados(msgRecebida):
