@@ -15,9 +15,6 @@ import subprocess
 import string
 import thread
 
-#Estabelecendo a porta
-serverPort = 9003
-
 def conexao(con, cliente):
 	#estabelecendo os padroes a serem procurados na string, os 4 primeiros devem ser ignorados, os 4 ultimos substituidos
 	#pelo comando equivalente
@@ -70,7 +67,8 @@ def conexao(con, cliente):
 	thread.exit()
 
 
-
+#Estabelecendo a porta
+serverPort = 9003
 #Criando socket TCP
 serverSocket = socket(AF_INET,SOCK_STREAM)
 #Associando a porta 9003 com o socket do servidor
