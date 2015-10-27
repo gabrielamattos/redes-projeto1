@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*- 
+
 #################################################################################################################
 # 	Nome: backend.py											#
 # 	Autor: Rodolfo Barcelar											#
@@ -23,35 +25,31 @@ def sendMsg(comando):
 	clientSocket = socket(AF_INET,SOCK_STREAM)
 	
 	# Tentando conectar com o servidor
-	try: 
-    		clientSocket.connect(serverName, serverPort)
-    		if comando:
-      			# Enviando o comando recebido para o servidor... comando TRY..EXCEPT
-      			clientSocket.send(comando)
-      			# Limpando o comando após o envio
-			comando = ""
-			# Recebendo o comando do servidor
-			dados = clientSocket.rcv(1024) 
-			# Validando se a resposta é coerente
-			dados = validacaoDosDados(dados) 
-		else:
-			dados = "Impossivel gerar comando!"
+	clientSocket.connect(serverName, serverPort)
+    	if comando:
+      		# Enviando o comando recebido para o servidor... comando TRY..EXCEPT
+      		clientSocket.send(comando)
+      		# Limpando o comando após o envio
+		comando = ""
+		# Recebendo o comando do servidor
+		dados = clientSocket.rcv(1024) 
+		# Validando se a resposta é coerente
+		dados = validacaoDosDados(dados) 
+	else:
+		dados = "Impossivel gerar comando!"
 
-		clientSocket.close()
+	clientSocket.close()
 
-	except Excecao: #caso a conexao com socket tiver fechado ou nao tiver sido feita
-		dados = "Socket sem conexao!"
- 
 	return dados
 
 def validacaoDosDados(msgRecebida):
-	lista = msgRecebida.split() #comando split() separa cada palavra contida na mensagem
+	
+	verificacao = msgRecebida.find('RESPONSE')
+	tam = len(msgRecebida)
 
-	if lista[0] != "RESPONSE":
-        	return "Resposta enviada eh incoerente!"
+	if verificacao != -1:
+        	return "Resposta enviada eh incoerente!"	
 
-	lista = msgRecebida.split("RESPONSE") #pega tudo que tem na mensagem recebida, menos 'RESPONSE'   
+	resposta = msgRecebida[11:tam]
 
-	return  lista[1]
-    
-
+	return  resposta
