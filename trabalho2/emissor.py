@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Referencias: http://www.cs.sfu.ca/CourseCentral/371/oba2/Sep19.pdf
+#http://www.binarytides.com/programming-udp-sockets-in-python/
 from socket import *
 import sys
 

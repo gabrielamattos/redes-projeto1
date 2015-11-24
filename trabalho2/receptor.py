@@ -18,7 +18,8 @@ def main():
 		print numPort
 		print nomeArq
 		recebendo = 1
-		#while recebendo:
+		#Esse while deverá ser usado para receber os pacotes do servidor, logo deve pensar um pouco mais em como ele deve ser usado para receber os pacotes aos poucos, acredito que a solicitação do arquivo (sendto) só pode acontecer uma vez
+		#while recebendo: 
 	
 		receptorSocket = socket(AF_INET, SOCK_DGRAM)
 		receptorSocket.sendto(nomeArq,(nomeHost, numPort))
