@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from socket import *
 import sys
 
@@ -10,17 +11,19 @@ def main():
 #>receptor <hostname do rementente> <numero de porta do rementente> <nome do arquivo>
 	
 	if (len(sys.argv) > 3):
-		hostname = sys.argv[1]
-		numPortRem = int(sys.argv[2])
+		nomeHost = sys.argv[1]
+		numPort = int(sys.argv[2])
 		nomeArq = sys.argv[3]
-	
+		print nomeHost
+		print numPort
+		print nomeArq
 		recebendo = 1
-		while recebendo:
+		#while recebendo:
 	
-			receptorSocket = socket(AF_INET, SOCK_DGRAM)
-			receptorSocket.sendto(nomeArq,(hostname, numPortRem))
-			respostas = receptorSocket.recvfrom(2048)
-
+		receptorSocket = socket(AF_INET, SOCK_DGRAM)
+		receptorSocket.sendto(nomeArq,(nomeHost, numPort))
+		respostas, enderecoServidor = receptorSocket.recvfrom(2048)
+		print respostas
 			#if resposta fim da mensagem recebendo = 0
 
 		receptorSocket.close()
