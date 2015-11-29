@@ -17,7 +17,7 @@
 	<body id="body">
 		<div id="Maquinas">
 			<p>Selecione os comandos desejados nas máquinas desejadas e escreva os argumentos ao lado</p>
-			<form id="form1" action="webserver.py" method="POST" target="_blank">
+			<form id="form1" action="/cgi-bin/webserver.py" method="POST" target="_blank">
 				<div id="Maq1">
 				<p> Máquina 1 </p>
 					<input type="checkbox" id="selPsM1" value="ps">ps  <input type="text" id="ArgPsM1" value=""><br />
@@ -37,9 +37,8 @@
 					<input type="checkbox" id="selPsM3" value="ps">ps  <input type="text" id="ArgPsM3" value=""><br />
 					<input type="checkbox" id="selDfM3" value="df">df <input type="text" id="ArgDfM3" value=""><br />
 					<input type="checkbox" id="selFingerM3" value="finger">finger <input type="text" id="ArgFingerM3" value=""><br />
-					<input type="checkbox" id="selUpTimeM3" value="uptime">uptime <input type="text" id="ArgUpTimeM3" value=""><br />		
+					<input type="checkbox" id="selUpTimeM3" value="uptime">uptime <input type="text" id="ArgUpTimeM3" value=""><br />
 				</div>		
-				
 				<input type="submit" id="botM1" value="Enviar Comandos">
 			</form>
 			<br/>
