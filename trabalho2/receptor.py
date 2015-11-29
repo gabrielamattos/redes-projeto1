@@ -6,10 +6,13 @@ import sys
 #http://www.diveintopython.net/scripts_and_streams/command_line_arguments.html
 
 
+#auxiliar do checksum	
 def verCarry(a,b):
 	c= a+ b
 	return(c & 0xffff) + (c>>16)
-#auxiliar do checksum	
+	
+#funcao checksum do livro  capitulo 3 para 16 bits usado no ud para saber se foi alterado indevidademente		+#!/Python27/python
+#https://pt.wikiversity.org/wiki/Introdu%C3%A7%C3%A3o_%C3%A0s_Redes_de_Computadores/Protocolo_UDP
 def checksum(msg,flag):
 	val1 = 0
 	for i in range(0, len(msg),2):
@@ -20,12 +23,6 @@ def checksum(msg,flag):
 		val1 = verCarry(val1,val2)
 	ret = ~val1 & 0xffff
 	return ret
-
-
-
-#http://www.diveintopython.net/scripts_and_streams/command_line_arguments.html
-
-
 
 def main():
 	
