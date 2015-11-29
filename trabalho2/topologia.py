@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*- 
 from mininet.topo import Topo
 from mininet.net import Mininet
 from mininet.util import irange,dumpNodeConnections
@@ -7,10 +8,19 @@ from mininet.node import CPULimitedHost
 from mininet.link import TCLink
 from mininet.cli import CLI
 
+# Modo de Usar:
+# Abrir um terminal, mudar o diretório de trabalho para a pasta que contém todos os arquivos
+# No terminal, digitar: sudo python topologia.py
+# Após digitar esse comando, no terminal aparecerá o seguinte: mininet>
+# digitar xterm h1 (mininet > xterm h1) - instalar xterm caso não esteja instalado no sistema
+# digitar xterm h2 (mininet > xterm h1) 
+# Esses comandos abrirão um terminal xterm para cada um dos hosts
+# digitar os comandos para rodar os arquivos python em cada um desses terminais, lembrando de
+# passar como nome do host emissor o nome definido na topologia.
 
 
 def simpleTest():
-	"Create and test a simple network"
+
 	
 	net = Mininet(host=CPULimitedHost, link=TCLink)
 	h1 = net.addHost( 'h1', ip='10.0.0.1' ) # h1 is a Host() object
