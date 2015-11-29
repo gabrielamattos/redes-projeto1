@@ -1,3 +1,4 @@
+#!/Python27/python
 # -*- coding: utf-8 -*-
 from socket import *
 import sys
@@ -20,10 +21,7 @@ def checksum(msg,flag):
 	ret = ~val1 & 0xffff
 	return ret
 
-#!/Python27/python
-# -*- coding: utf-8 -*-
-from socket import *
-import sys
+
 
 #http://www.diveintopython.net/scripts_and_streams/command_line_arguments.html
 
@@ -38,12 +36,12 @@ def main():
 		print nomeHost
 		print numPort
 		print nomeArq
-		clientSocket = socket(AF_INET, SOCK_DGRAM)
+		receptorSocket = socket(AF_INET, SOCK_DGRAM)
 
-		clientSocket.sendto(nomeArq, (nomeHost, numPort))
+		receptorSocket.sendto(nomeArq, (nomeHost, numPort))
 
-		resMessage = clientSocket.recvfrom(8192)[0]
-		clientSocket.close()
+		resMessage = receptorSocket.recvfrom(8192)[0]
+		receptorSocket.close()
 		print resMessage
 	else:
 		print "Espera-se os argumentos: hostname do rementente, numero de porta do rementente e nome do arquivo."
