@@ -8,19 +8,19 @@ def main():
 
 	if(len(sys.argv)>1):
 		numPort = int(sys.argv[1])
-		ipServidor = ""
 		print numPort
 		servidorSocket = socket(AF_INET, SOCK_DGRAM)
-		servidorSocket.bind((ipServidor, numPort))
+		servidorSocket.bind(('', numPort))
 		print "The server is ready to receive"
-		
-		while 1: 
-			print "Aqui, teste"
-			messagem, endCliente = servidorSocket.recvfrom(2048)
-			mensagemModificada = messagem.upper()
-			servidorSocket.sendTo(mensagemModificada, endCliente)
 
-	else:
-		print "Espera-se o seguinte parametro: numero de porta do serviço"
+	
+		while 1:
+			mensagem, enderecoReceptor = servidorSocket.recvfrom(2048)
+	
+			res = "RESPONSE " +  " " + mensagem
+	
+			servidorSocket.sendto(res, enderecoReceptor)
+		else:
+			print "Espera-se o seguinte parametro: numero de porta do serviço"
 
 main()
