@@ -18,14 +18,19 @@ def checksum(msg,flag):
 	for i in range(0, len(msg),2):
 		if flag == 0:
 			val2 = ord(msg[i]) + (ord(msg[i+1])<<8)
-		elif flag == 1:
+		elif flag ==1:
 			val2 = ord('0') + (ord(msg[i+1])<<8)
 		val1 = verCarry(val1,val2)
 	ret = ~val1 & 0xffff
 	return ret
 
-#o receptor opera como no Stop and Wait
-#recebe os pacotes em ordem
+def makeAck(numAck):
+
+	ack = str(numAck) + ";"
+	return ack
+
+
+
 def main():
 	
 	if (len(sys.argv) > 3):
@@ -35,13 +40,38 @@ def main():
 		print nomeHost
 		print numPort
 		print nomeArq
+
+		print len(nomeArq)
+		#msgInicial = "0;" + nomeArq
+		msgInicial = nomeArq
+		#estabelecendo conexao antes de inicializar a transmissao dos dados
 		receptorSocket = socket(AF_INET, SOCK_DGRAM)
+		receptorSocket.sendto(msgInicial, (nomeHost, numPort))
+		nroSeqEsperado = 0
+		ack = makeAck(0)
+		while 1:
+			resMessage = receptorSocket.recvfrom(8192)[0]
+			parts  = resMessage.split(";")
+			nroSeqRecebido = int(parts[0])
+			
+			print resMessage
+			print nroSeqRecebido
+			print nroSeqEsperado
 
-		receptorSocket.sendto(nomeArq, (nomeHost, numPort))
+			if(nroSeqRecebido == nroSeqEsperado):
+				#if checksum esta ok
+				print "aqui" + ack
+				ack = makeAck(nroSeqRecebido)
+				receptorSocket.sendto(ack, (nomeHost, numPort))
+				nroSeqEsperado = nroSeqEsperado + 1
+				print ack
+				print "aqui" + ack
+			else:
+				ack = makeAck(nroSeqEsperado)
+				receptorSocket.sendto(ack, (nomeHost, numPort))
 
-		resMessage = receptorSocket.recvfrom(8192)[0]
-		receptorSocket.close()
-		print resMessage
+				
+		receptorSocket.close()	
 	else:
 		print "Espera-se os argumentos: hostname do rementente, numero de porta do rementente e nome do arquivo."
 
