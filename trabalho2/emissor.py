@@ -8,7 +8,7 @@ import numpy
 import threading
 import signal
 
-#variaveis globais que serão usadas para enviar os dados e receber o ack
+#variaveis globais que serao usadas para enviar os dados e receber o ack
 tamanhoJanela = 2
 numSeqMax = tamanhoJanela - 1
 tamanhoPacote = 5
@@ -20,7 +20,7 @@ timeout = 2
 
 
 
-# A mensagem será dividida no tamanho da janela e salva em um vetor de string, o indice do vetor vai representar
+# A mensagem sera dividida no tamanho da janela e salva em um vetor de string, o indice do vetor vai representar
 
 def dividirMensagem(tamanhoPacote, mensagem):
 
@@ -43,7 +43,7 @@ def receberAck():
 	print ack
 	print numSeq
 	
-	# verificar se não é necessário fazer uso do >=
+	# verificar se nao eh necessario fazer uso do >=
 	if (ack > numSeqBase):
 		numSeqMax = numSeqMax + (ack+1 - numSeqBase)
 		numSeqBase = ack
@@ -69,12 +69,12 @@ def main():
 
 			pacotes = dividirMensagem(tamanhoPacote, mensagem)
 
-			#é criado uma thread para receber os acks do receptor
+			#eh criado uma thread para receber os acks do receptor
 			t_receptor = threading.Thread(receberAck)
 			t_receptor.daemon = True
 			t_receptor.start()
 
-			#pacote é transmitido em ordem
+			#pacote eh transmitido em ordem
 			for i in range (0, len(pacotes)):
 
 				if (numSeq <= numSeqMax):
