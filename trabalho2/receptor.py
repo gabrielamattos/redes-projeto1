@@ -49,6 +49,7 @@ def main():
 		receptorSocket.sendto(msgInicial, (nomeHost, numPort))
 		nroSeqEsperado = 0
 		ack = makeAck(0)
+		arquivo = open('ArquivoRecebido.out', 'w')
 		while 1:
 			resMessage = receptorSocket.recvfrom(8192)[0]
 			parts  = resMessage.split(";")
@@ -57,10 +58,24 @@ def main():
 			print resMessage
 			print nroSeqRecebido
 			print nroSeqEsperado
-
+			
+			#primeira verificacao a ser feita
+			#segundo nossa implementacao, quando o nro de seq for -1 (considerando um pacote nao corrompido)
+			#existem duas possibilidades: ou essa e a ultima parte do arquivo, ou o arquivo nao foi encontrado
+			if(nroSeqRecebido == -1):
+				if(parts[1] == "Arquivo nao encontrado"):
+					arquivo.close()
+					break
+				else:
+					arquivo.write(parts[1])
+					arquivo.close()
+					break
+					
+	
 			if(nroSeqRecebido == nroSeqEsperado):
 				#if checksum esta ok
 				print "aqui" + ack
+				arquivo.write(parts[1])
 				ack = makeAck(nroSeqRecebido)
 				receptorSocket.sendto(ack, (nomeHost, numPort))
 				nroSeqEsperado = nroSeqEsperado + 1
