@@ -95,6 +95,6 @@ def main():
 			
 						
 		else:
-			print "Espera-se o seguinte parametro: numero de porta do serviço"
+			print "Espera-se o seguinte parametro: numero de porta do servico"
 
 main()
