@@ -3,7 +3,15 @@ O objetivo deste trabalho é usar sockets em UDP juntamente com a linguagem Pyth
 
 No nosso projeto, implementamos um protocolo simples de controle de congestionamento baseado em janela (window-based) e construído a partir de um protocolo Go-Back-N. Este protocolo visa o envio de um determinado número de pacotes (via Socket UDP) sem o retorno de um acknowlegmente(ACK) do receptor, desde que haja pacotes disponíveis. Assim, deveremos dividir uma mensagem em pacotes, ou seja, dividir a mensagem em pequenos fragmentos para serem enviadas.
 
-Oberve o uso de dois códigos: o emissor.py e o receptor.py. O programa receptor aturará como um cliente, e o receptor, como um servidor. Na execução do programa receptor, em linha de comando, será passado como argumentos os hostname e a porta do emissor, assim como o nome do arquivo que o receptor quer recuperar do emissor. Já o programa emissor, deverá ser passado como argumento na sua execução, a porta com que se dejsea trabalhar (via linha de comando).
+Oberve o uso de dois códigos: o emissor.py e o receptor.py. O programa receptor aturará como um cliente, e o receptor, como um servidor. Na execução do programa receptor, em linha de comando, será passado como argumentos os hostname e a porta do emissor, assim como o nome do arquivo que o receptor quer recuperar do emissor. Já o programa emissor, deverá ser passado como argumento na sua execução, a porta com que se dejsea trabalhar (via linha de comando). Para o receptor, veja a ordem dos argumentos:
+
+  nomeHost = sys.argv[1]
+	numPort = int(sys.argv[2])
+	nomeArq = sys.argv[3]
+		
+Para o emissor, veja a ordem dos argumentos:
+
+  numPort = int(sys.argv[1])
 
 Primeiramente, o receptor enviará para o emissor o arquivo que gostaria de receber. O emissor, recebendo o pedido, irá verificar a existência do arquivo. Se ele existir, deverá dividir o arquivo em vários pacotes menores. Além disso, após a divisão, o emissor deverá incluir algumas informaçõs no cabecalho do pacote. No nosso código, usamos um cabeçalho com as seguintes informações: host do envio, porta para o envio, tamanho do arquivo, número de sequência e o número checksum.
 
