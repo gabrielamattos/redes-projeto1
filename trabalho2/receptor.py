@@ -5,7 +5,7 @@ import sys
 
 #http://www.diveintopython.net/scripts_and_streams/command_line_arguments.html
 
-def design_segment(seqnumero,segment_data):
+def preparar_segment(seqnumero,segment_data):
 	seq_bits = '{0:032b}'.format(seqnumero)
     	checksum = '0' * 16
     	indicator_bits = '01' * 8
