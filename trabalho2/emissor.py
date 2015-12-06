@@ -8,6 +8,18 @@ import numpy
 import threading
 import signal
 
+def carry_around_add(a, b):
+    c = a + b
+    return (c & 0xffff) + (c >> 16)
+
+def checksum(msg):
+   s = 0
+   for i in range(0, len(msg), 2):
+       w = ord(msg[i]) + (ord(msg[i+1]) << 8)
+       s = carry_around_add(s, w)
+   return ~s & 0xffff
+
+
 #variaveis globais que serao usadas para enviar os dados e receber o ack
 tamanhoJanela = 2
 numSeqMax = tamanhoJanela - 1
