@@ -29,7 +29,7 @@ def preparar_segment(seqnumero,segment_data):
 #val = preparar_segment(seqnumero,segment_data)
 #mensagem_final = fazer_checksum(val)
 
-#Checksum	
+#Checksum da mensagem preparada.pqa preparacao meio que separa ela por bits.	
 def fazer_checksum(msg):
         if msg:
 		total = 0	
