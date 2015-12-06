@@ -15,6 +15,21 @@ def checksum(msg):
        w = ord(msg[i]) + (ord(msg[i+1]) << 8)
        s = carry_around_add(s, w)
    return ~s & 0xffff
+   
+
+ #teste = "abcdefghijklmnopqrst"
+#chk = checksum(teste)
+#msg_type = '\x08;' # ICMP Echo Request
+#msg_code = '\x00;' # must be zero
+#msg_checksum_padding = '' # "...with value 0 substituted for this field..."
+#rest_header = "arquivo;" # from pcap
+#entire_message = msg_type + msg_code + msg_checksum_padding + rest_header + teste
+#entire_chk = checksum(entire_message)
+#print(entire_message)
+#print ('{:x}'.format(entire_chk))
+#print("Checksum : 0x%04x" % checksum(entire_message))
+#new_checked =  "0x%04x;"% entire_chk + rest_header  + teste
+#print(new_checked) 
 
 def makeAck(numAck):
 
