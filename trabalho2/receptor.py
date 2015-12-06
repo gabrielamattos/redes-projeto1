@@ -70,14 +70,11 @@ def main():
 	
 			if(nroSeqRecebido == nroSeqEsperado):
 				#if checksum esta ok
-				print "aqui" + ack
 				arquivo.write(parts[1])
 				ack = makeAck(nroSeqRecebido)
 				receptorSocket.sendto(ack, (nomeHost, numPort))
 				print "Enviando Ack " + nroSeqRecebido
 				nroSeqEsperado = nroSeqEsperado + 1
-				print ack
-				print "aqui" + ack
 			else:
 				ack = makeAck(nroSeqEsperado)
 				receptorSocket.sendto(ack, (nomeHost, numPort))
