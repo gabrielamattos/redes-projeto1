@@ -18,6 +18,8 @@ numSeqBase = 0
 
 timeout = 2
 
+servidorSocket = socket(AF_INET, SOCK_DGRAM)
+
 
 
 # A mensagem sera dividida no tamanho da janela e salva em um vetor de string, o indice do vetor vai representar
@@ -36,16 +38,22 @@ def dividirMensagem(tamanhoPacote, mensagem):
 
 def receberAck():
 
+
 	mensagem = servidorSocket.recvfrom(2048)[0]
+
+	global numSeqBase
+	global numSeqMax
 
 	parts  = mensagem.split(";")
 	ack = int(parts[0])
-	print ack
-	print numSeq
-	
-	if (ack > numSeqBase):
+	print "Ack recebido"
+
+	# verificar se nao eh necessario fazer uso do >=
+	if (ack >= numSeqBase):
 		numSeqMax = numSeqMax + (ack+1 - numSeqBase)
 		numSeqBase = ack
+	print numSeqBase
+	print numSeqMax
 
 
 def main():
@@ -53,13 +61,12 @@ def main():
 	if(len(sys.argv)>1):
 		numPort = int(sys.argv[1])
 		print numPort
-		servidorSocket = socket(AF_INET, SOCK_DGRAM)
 		servidorSocket.bind(('', numPort))
 	
 		while 1:
-			print "O servidor esta pronto para receber."
 
-	
+		
+			print "O servidor esta pronto para receber."
 			mensagem, enderecoReceptor = servidorSocket.recvfrom(2048)
 
 			numSeqBase = 0
@@ -69,7 +76,7 @@ def main():
 			pacotes = dividirMensagem(tamanhoPacote, mensagem)
 
 			#eh criado uma thread para receber os acks do receptor
-			t_receptor = threading.Thread(receberAck)
+			t_receptor = threading.Thread(target = receberAck)
 			t_receptor.daemon = True
 			t_receptor.start()
 
