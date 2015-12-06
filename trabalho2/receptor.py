@@ -9,14 +9,19 @@ import sys
 
 def preparar_segment(seqnumero,segment_data):
 	seq_bits = '{0:032b}'.format(seqnumero)
+	#formato de 32 bits de seqnumero
     	checksum = '0' * 16
+    	
     	indicator_bits = '01' * 8
     	data = ''
     	for i in range(1,len(segment_data)+1):
+    		#vai lendo os dados do data.
         	data_character = segment_data[i-1]
         	data_byte = '{0:08b}'.format(ord(data_character))
         	data = data + data_byte
+        	#e soman
     	segment = seq_bits + checksum + indicator_bits + data
+    	#junta no segmento total o numero da janela, o indicador de bits, e o valor lido
     	return segment
 #preara segment e dpois jogar no checksum... se retornar 0 falhou
 
