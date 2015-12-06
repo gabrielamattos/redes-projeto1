@@ -16,10 +16,10 @@ def preparar_segment(seqnumero,segment_data):
         	data = data + data_byte
     	segment = seq_bits + checksum + indicator_bits + data
     	return segment
-#fazer design segment e dpois jogar no checksum... se retornar 0 falhou
+#preara segment e dpois jogar no checksum... se retornar 0 falhou
 
 
-#val = design_segment(seqnumero,segment_data)
+#val = preparar_segment(seqnumero,segment_data)
 #mensagem_final = fazer_checksum(val)
 
 #Checksum	
