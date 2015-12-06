@@ -5,45 +5,16 @@ import sys
 
 #http://www.diveintopython.net/scripts_and_streams/command_line_arguments.html
 
-#segment data e a msgm em si, e numero, e referente a qual numero do back n ele pertence
+def carry_around_add(a, b):
+    c = a + b
+    return (c & 0xffff) + (c >> 16)
 
-def preparar_segment(seqnumero,segment_data):
-	seq_bits = '{0:032b}'.format(seqnumero)
-	#formato de 32 bits de seqnumero
-    	checksum = '0' * 16
-    	
-    	indicator_bits = '01' * 8
-    	data = ''
-    	for i in range(1,len(segment_data)+1):
-    		#vai lendo os dados do data.
-        	data_character = segment_data[i-1]
-        	data_byte = '{0:08b}'.format(ord(data_character))
-        	data = data + data_byte
-        	#e soman
-    	segment = seq_bits + checksum + indicator_bits + data
-    	#junta no segmento total o numero da janela, o indicador de bits, e o valor lido
-    	return segment
-#preara segment e dpois jogar no checksum... se retornar 0 falhou
-
-
-#val = preparar_segment(seqnumero,segment_data)
-#mensagem_final = fazer_checksum(val)
-
-#Checksum da mensagem preparada.pqa preparacao meio que separa ela por bits.	
-def fazer_checksum(msg):
-        if msg:
-		total = 0	
-                data = [msg[i:i+16] for i in range(0,len(msg),16)]
-                for y in data:
-			total += int(y,2)
-			if total >= 65535:
-				total -= 65535
-		checksum = 65535 - total
-		check_sum_bits = '{0:016b}'.format(checksum)
-		send_msg = msg[0:32] + check_sum_bits + msg[48:]
-		return send_msg
-	else:
-		return '0'
+def checksum(msg):
+   s = 0
+   for i in range(0, len(msg), 2):
+       w = ord(msg[i]) + (ord(msg[i+1]) << 8)
+       s = carry_around_add(s, w)
+   return ~s & 0xffff
 
 def makeAck(numAck):
 
