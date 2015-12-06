@@ -7,7 +7,7 @@ import math
 import numpy
 import threading
 import signal
-
+#fonte do checksum como base ea stackoverflow.com a maioria das pessoas usa essa funcao como base.
 def carry_around_add(a, b):
     c = a + b
     return (c & 0xffff) + (c >> 16)
