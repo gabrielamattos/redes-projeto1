@@ -5,6 +5,8 @@ import sys
 
 #http://www.diveintopython.net/scripts_and_streams/command_line_arguments.html
 
+#segment data e a msgm em si, e numero, e referente a qual numero do back n ele pertence
+
 def preparar_segment(seqnumero,segment_data):
 	seq_bits = '{0:032b}'.format(seqnumero)
     	checksum = '0' * 16
