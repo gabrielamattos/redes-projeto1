@@ -61,7 +61,7 @@ def main():
 			
 			#primeira verificacao a ser feita
 			#segundo nossa implementacao, quando o nro de seq for -1 (considerando um pacote nao corrompido)
-			#existem duas possibilidades: ou essa e a ultima parte do arquivo, ou o arquivo nao foi encontrado
+			#existem duas possibilidades: ou essa eh a ultima parte do arquivo, ou o arquivo nao foi encontrado
 			if(nroSeqRecebido == -1):
 				if(parts[1] == "Arquivo nao encontrado"):
 					arquivo.close()
