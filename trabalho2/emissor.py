@@ -43,7 +43,6 @@ def receberAck():
 	print ack
 	print numSeq
 	
-	# verificar se nao eh necessario fazer uso do >=
 	if (ack > numSeqBase):
 		numSeqMax = numSeqMax + (ack+1 - numSeqBase)
 		numSeqBase = ack
@@ -58,7 +57,7 @@ def main():
 		servidorSocket.bind(('', numPort))
 	
 		while 1:
-			print "O servidor está pronto para receber."
+			print "O servidor esta pronto para receber."
 
 	
 			mensagem, enderecoReceptor = servidorSocket.recvfrom(2048)
