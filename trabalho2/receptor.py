@@ -37,16 +37,15 @@ def main():
 		nomeHost = sys.argv[1]
 		numPort = int(sys.argv[2])
 		nomeArq = sys.argv[3]
-		print nomeHost
-		print numPort
-		print nomeArq
+		
 
-		print len(nomeArq)
+		#print len(nomeArq)
 		#msgInicial = "0;" + nomeArq
 		msgInicial = nomeArq
 		#estabelecendo conexao antes de inicializar a transmissao dos dados
 		receptorSocket = socket(AF_INET, SOCK_DGRAM)
 		receptorSocket.sendto(msgInicial, (nomeHost, numPort))
+		print "Requisitando arquivo " + msgInicial + " para o servidor " + nomeHost + " na porta " + numPort
 		nroSeqEsperado = 0
 		ack = makeAck(0)
 		arquivo = open('ArquivoRecebido.out', 'w')
@@ -54,10 +53,7 @@ def main():
 			resMessage = receptorSocket.recvfrom(8192)[0]
 			parts  = resMessage.split(";")
 			nroSeqRecebido = int(parts[0])
-			
-			print resMessage
-			print nroSeqRecebido
-			print nroSeqEsperado
+			print "Numero de sequencia recebido: " + nroSeqRecebido + ". Esperava-se o numero de sequencia: " + nroSeqEsperado
 			
 			#primeira verificacao a ser feita
 			#segundo nossa implementacao, quando o nro de seq for -1 (considerando um pacote nao corrompido)
@@ -78,12 +74,14 @@ def main():
 				arquivo.write(parts[1])
 				ack = makeAck(nroSeqRecebido)
 				receptorSocket.sendto(ack, (nomeHost, numPort))
+				print "Enviando Ack " + nroSeqRecebido
 				nroSeqEsperado = nroSeqEsperado + 1
 				print ack
 				print "aqui" + ack
 			else:
 				ack = makeAck(nroSeqEsperado)
 				receptorSocket.sendto(ack, (nomeHost, numPort))
+				print "Reenviando Ack " + nroSeqRecebido
 
 				
 		receptorSocket.close()	
