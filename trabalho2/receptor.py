@@ -5,24 +5,38 @@ import sys
 
 #http://www.diveintopython.net/scripts_and_streams/command_line_arguments.html
 
+def design_segment(seqnumero,segment_data):
+	seq_bits = '{0:032b}'.format(seqnumero)
+    	checksum = '0' * 16
+    	indicator_bits = '01' * 8
+    	data = ''
+    	for i in range(1,len(segment_data)+1):
+        	data_character = segment_data[i-1]
+        	data_byte = '{0:08b}'.format(ord(data_character))
+        	data = data + data_byte
+    	segment = seq_bits + checksum + indicator_bits + data
+    	return segment
+#fazer design segment e dpois jogar no checksum... se retornar 0 falhou
 
-#auxiliar do checksum	
-def verCarry(a,b):
-	c= a+ b
-	return(c & 0xffff) + (c>>16)
-	
-#funcao checksum do livro  capitulo 3 para 16 bits usado no ud para saber se foi alterado indevidademente		+#!/Python27/python
-#https://pt.wikiversity.org/wiki/Introdu%C3%A7%C3%A3o_%C3%A0s_Redes_de_Computadores/Protocolo_UDP
-def checksum(msg,flag):
-	val1 = 0
-	for i in range(0, len(msg),2):
-		if flag == 0:
-			val2 = ord(msg[i]) + (ord(msg[i+1])<<8)
-		elif flag ==1:
-			val2 = ord('0') + (ord(msg[i+1])<<8)
-		val1 = verCarry(val1,val2)
-	ret = ~val1 & 0xffff
-	return ret
+
+#val = design_segment(seqnumero,segment_data)
+#mensagem_final = fazer_checksum(val)
+
+#Checksum	
+def fazer_checksum(msg):
+        if msg:
+		total = 0	
+                data = [msg[i:i+16] for i in range(0,len(msg),16)]
+                for y in data:
+			total += int(y,2)
+			if total >= 65535:
+				total -= 65535
+		checksum = 65535 - total
+		check_sum_bits = '{0:016b}'.format(checksum)
+		send_msg = msg[0:32] + check_sum_bits + msg[48:]
+		return send_msg
+	else:
+		return '0'
 
 def makeAck(numAck):
 
