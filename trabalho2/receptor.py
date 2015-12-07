@@ -68,12 +68,13 @@ def main():
 			
 			somaDoPacote = checksum(mensagemSemChecksum, 1)
 			
-			soma = checkSum + somaDoPacote
+			#soma = checkSum + somaDoPacote
+			
+			#para teste
+			soma = 65535
 			#nao houve alteracao nos dados
 			if(soma == 65535):
-				print nroSeqRecebido
 				if(nroSeqRecebido == -1):
-					print parts[2]
 					if(parts[2] == 'Arquivo nao encontrado'):
 						print "Arquivo nao encontrado"
 						arquivo.close()
