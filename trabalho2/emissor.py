@@ -186,6 +186,7 @@ def main():
 	
 				numSeq = -1
 				res = str(checksum) + ";" +str(numSeq) + ";"
+				servidorSocket.sendto(res, enderecoReceptor)
 				arquivo.close()
 				t_receptor.join()
 				
