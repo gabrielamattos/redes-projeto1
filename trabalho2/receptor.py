@@ -72,17 +72,17 @@ def main():
 			if(soma == 65535):
 
 				if(nroSeqRecebido == -1):
-					if(parts[1] == "Arquivo nao encontrado"):
+					if(parts[2] == "Arquivo nao encontrado"):
 						arquivo.close()
 						break
 					else:
-						arquivo.write(parts[1])
+						arquivo.write(parts[2])
 						arquivo.close()
 						break
 						
 				
 				if(nroSeqRecebido == nroSeqEsperado):
-					arquivo.write(parts[1])
+					arquivo.write(parts[2])
 					ack = makeAck(nroSeqRecebido)
 					receptorSocket.sendto(ack, (nomeHost, numPort))
 					print "Enviando Ack " + str(nroSeqRecebido)
