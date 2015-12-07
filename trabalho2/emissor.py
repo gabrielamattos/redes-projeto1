@@ -44,14 +44,14 @@ numSeq = 0
 numSeqBase = 0
 i = 0
 checksum = 0
-look = threading.Lock()
+lock = threading.Lock()
 pacotes = []
 
 timeout = 5
 
 def definirReenvio(signum, stack):
 
-	look.acquire()
+	lock.acquire()
 	global timeout
 	print 'Houve timeout'
 	global i
@@ -62,7 +62,7 @@ def definirReenvio(signum, stack):
 	print numSeq
 	signal.alarm(timeout)
 
-	look.release()
+	lock.release()
 
 servidorSocket = socket(AF_INET, SOCK_DGRAM)
 signal.signal(signal.SIGALRM, definirReenvio)
@@ -85,7 +85,7 @@ def receberAck():
 
 	while 1:
 
-		look.acquire()
+		lock.acquire()
 
 		mensagem = servidorSocket.recvfrom(2048)[0]
 			
@@ -101,7 +101,7 @@ def receberAck():
 		print "Recebito ACK " + parts[1]
 		
 		# verificar se nao eh necessario fazer uso do >=
-		if (ack == (len(pacotes) - 1)):
+		if (ack == -1):
 			print "Todos os ACKs recebidos."
 			break
 		if (ack >= numSeqBase):
@@ -113,7 +113,7 @@ def receberAck():
 		print i
 
 	
-		look.release()
+		lock.release()
 
 
 
@@ -187,6 +187,7 @@ def main():
 				numSeq = -1
 				res = str(checksum) + ";" +str(numSeq) + ";"
 				arquivo.close()
+				t_receptor.join()
 				
 			except IOError:	
 				numSeq = -1
@@ -194,9 +195,7 @@ def main():
 				servidorSocket.sendto(res, enderecoReceptor)
 	 
 				print "Arquivo solicitado nao encontrado."
-						
-
-			t_receptor.join()
+					
 						
 		else:
 			print "Espera-se o seguinte parametro: numero de porta do servico"
