@@ -73,7 +73,7 @@ def main():
 			if(soma == 65535):
 
 				if(nroSeqRecebido == -1):
-					if(parts[2] == "Arquivo nao encontrado"):
+					if(parts[2] == 'Arquivo nao encontrado'):
 						print "Arquivo nao encontrado"
 						arquivo.close()
 					else:
