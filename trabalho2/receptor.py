@@ -68,10 +68,10 @@ def main():
 			
 			somaDoPacote = checksum(mensagemSemChecksum, 1)
 			
-			#soma = checkSum + somaDoPacote
+			soma = checkSum + somaDoPacote
 			
 			#para teste
-			soma = 65535
+			#soma = 65535
 			#nao houve alteracao nos dados
 			if(soma == 65535):
 				if(nroSeqRecebido == -1):
