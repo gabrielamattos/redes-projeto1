@@ -73,6 +73,7 @@ def main():
 
 				if(nroSeqRecebido == -1):
 					if(parts[2] == "Arquivo nao encontrado"):
+						print "Arquivo nao encontrado"
 						arquivo.close()
 					else:
 						arquivo.write(parts[2])
