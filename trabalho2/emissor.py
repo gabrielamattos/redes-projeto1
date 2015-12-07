@@ -7,6 +7,7 @@ import math
 import numpy
 import threading
 import signal
+
 #fonte do checksum como base ea stackoverflow.com a maioria das pessoas usa essa funcao como base.
 def carry_around_add(a, b):
     c = a + b
@@ -38,18 +39,36 @@ def checksum(msg):
 tamanhoJanela = 2
 numSeqMax = tamanhoJanela - 1
 tamanhoPacote = 5
-ack = 0
+ack = -1
 numSeq = 0
 numSeqBase = 0
+i = 0
+checksum = 0
+look = threading.Lock()
+pacotes = []
 
-timeout = 2
+timeout = 5
+
+def definirReenvio(signum, stack):
+
+	look.acquire()
+	global timeout
+	print 'Houve timeout'
+	global i
+	global numSeq
+	i = ack + 1
+	numSeq  = i
+	print i		
+	print numSeq
+	signal.alarm(timeout)
+
+	look.release()
 
 servidorSocket = socket(AF_INET, SOCK_DGRAM)
+signal.signal(signal.SIGALRM, definirReenvio)
 
 
-
-# A mensagem sera dividida no tamanho da janela e salva em um vetor de string, o indice do vetor vai representar
-
+# A mensagem sera dividida no tamanho da janela e salva em um vetor de string, o indice do vetor vai representar o numero de sequencia
 def dividirMensagem(tamanhoPacote, mensagem):
 
 	pacotes = []
@@ -64,67 +83,120 @@ def dividirMensagem(tamanhoPacote, mensagem):
 
 def receberAck():
 
+	while 1:
 
-	mensagem = servidorSocket.recvfrom(2048)[0]
+		look.acquire()
 
-	global numSeqBase
-	global numSeqMax
+		mensagem = servidorSocket.recvfrom(2048)[0]
+			
+		global numSeqBase
+		global numSeqMax
+		global i
+		global pacotes
+		
+		global ack		
 
-	parts  = mensagem.split(";")
-	ack = int(parts[0])
-	print "Ack recebido"
+		parts  = mensagem.split(";")
+		ack = int(parts[1])
+		print "Recebito ACK " + parts[1]
+		
+		# verificar se nao eh necessario fazer uso do >=
+		if (ack == (len(pacotes) - 1)):
+			print "Todos os ACKs recebidos."
+			break
+		if (ack >= numSeqBase):
+			numSeqMax = numSeqMax + (ack - numSeqBase)
+			numSeqBase = ack
+			signal.alarm(timeout)
+		print numSeqBase
+		print numSeqMax
+		print i
 
-	# verificar se nao eh necessario fazer uso do >=
-	if (ack >= numSeqBase):
-		numSeqMax = numSeqMax + (ack+1 - numSeqBase)
-		numSeqBase = ack
-	print numSeqBase
-	print numSeqMax
+	
+		look.release()
+
 
 
 def main():
+	global i
+	global numSeq
+	global numSeqBase
+	global numSeqMax
+	global pacotes
+	global ack
 
 	if(len(sys.argv)>1):
 		numPort = int(sys.argv[1])
 		print numPort
 		servidorSocket.bind(('', numPort))
+
+		t_receptor = threading.Thread(target = receberAck)
+		t_receptor.daemon = True
 	
 		while 1:
 
 		
 			print "O servidor esta pronto para receber."
 			mensagem, enderecoReceptor = servidorSocket.recvfrom(2048)
+			print mensagem
+	
+			try:
+				arquivo = open(mensagem, 'r')
+				print mensagem
+				mensagem = arquivo.read()
+				# tratar arquivo nao encontrado aqui
+				
+				t_receptor.start()
+				ack = 0
+				numSeqBase = 0
+				numSeq = 0
+				i = 0
+				numSeqMax = tamanhoJanela - 1
+	
+				pacotes = dividirMensagem(tamanhoPacote, mensagem)
+	
+				#eh criado uma thread para receber os acks do receptor
+	
+				signal.alarm(timeout)
+	
+				#pacote eh transmitido em ordem
+				while 1:
+					if (i == (len(pacotes))):
+						print numSeq
+						break
 
-			numSeqBase = 0
-			numSeq = 0
-			numSeqMax = tamanhoJanela - 1
+					if (numSeq <= numSeqMax):
+				
+						res = str(checksum) + ";" + str(numSeq) + ";" + pacotes[i] + ";"
+						# [melhorar depois] mensagem avisando que foi enviado o pacote
+						print "Enviando pacote de dados com cabecalho: " + res + "/" + str(len(pacotes))				    
+						servidorSocket.sendto(res, enderecoReceptor)
+	
+						numSeq += 1
+						i += 1
+					#quando atinge o tamanho da janela ele deve reenviar os pacotes
+					#else:
+						#time
+						#print "Tamanho da janela atingido " + str(i)
+						#print ack
+						#i = ack + 1
+						#numSeq = i
+					#print i
+					#print numSeq
+	
+				numSeq = -1
+				res = str(checksum) + ";" +str(numSeq) + ";"
+				arquivo.close()
+				
+			except IOError:	
+				numSeq = -1
+				res = str(checksum) + ";" +str(numSeq) + ";Arquivo nao encontrado"
+				servidorSocket.sendto(res, enderecoReceptor)
+	 
+				print "Arquivo solicitado nao encontrado."
+						
 
-			pacotes = dividirMensagem(tamanhoPacote, mensagem)
-
-			#eh criado uma thread para receber os acks do receptor
-			t_receptor = threading.Thread(target = receberAck)
-			t_receptor.daemon = True
-			t_receptor.start()
-
-			#pacote eh transmitido em ordem
-			for i in range (0, len(pacotes)):
-
-				if (numSeq <= numSeqMax):
-			
-					res = str(numSeq) + ";" + pacotes[i] + ";"
-					# [melhorar depois] mensagem avisando que foi enviado o pacote
-					print "Enviando pacote de dados com cabecalho: " + res + "/" + str(len(pacotes))				    
-					servidorSocket.sendto(res, enderecoReceptor)
-
-					numSeq += 1
-				#quando atinge o tamanho da janela ele deve reenviar os pacotes
-				else:
-					#time
-					print "Tamanho da janela atingido " + str(i)
-					i = ack + 1
-					numSeq = i
-
-			
+			t_receptor.join()
 						
 		else:
 			print "Espera-se o seguinte parametro: numero de porta do servico"
