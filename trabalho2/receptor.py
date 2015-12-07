@@ -52,6 +52,7 @@ def main():
 		while 1:
 			resMessage = receptorSocket.recvfrom(8192)[0]
 			parts  = resMessage.split(";")
+			print parts
 			nroSeqRecebido = int(parts[1])
 			print "Numero de sequencia recebido: " + str(nroSeqRecebido) + ". Esperava-se o numero de sequencia: " + str(nroSeqEsperado)
 			
