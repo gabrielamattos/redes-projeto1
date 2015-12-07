@@ -74,11 +74,10 @@ def main():
 				if(nroSeqRecebido == -1):
 					if(parts[2] == "Arquivo nao encontrado"):
 						arquivo.close()
-						break
 					else:
 						arquivo.write(parts[2])
 						arquivo.close()
-						break
+					break
 						
 				
 				if(nroSeqRecebido == nroSeqEsperado):
