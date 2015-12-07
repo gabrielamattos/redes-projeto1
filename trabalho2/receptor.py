@@ -24,7 +24,7 @@ def checksum(msg, opcao):
 
 def makeAck(numAck):
 	ack = str(numAck) + ";"
-	checkSum = checkSum(ack, 0)
+	checkSum = checksum(ack, 0)
 	ack =  str(checkSum) + ";" + ack
 	return ack
 
