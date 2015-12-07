@@ -4,6 +4,7 @@ from socket import *
 import sys
 
 #http://www.diveintopython.net/scripts_and_streams/command_line_arguments.html
+#http://stackoverflow.com/questions/1767910/checksum-udp-calculation-python
 
 def carry_around_add(a, b):
     c = a + b
