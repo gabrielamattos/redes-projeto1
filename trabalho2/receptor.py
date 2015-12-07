@@ -71,7 +71,7 @@ def main():
 			soma = checkSum + somaDoPacote
 			#nao houve alteracao nos dados
 			if(soma == 65535):
-
+				print nroSeqRecebido
 				if(nroSeqRecebido == -1):
 					print parts[2]
 					if(parts[2] == 'Arquivo nao encontrado'):
