@@ -13,26 +13,19 @@ def carry_around_add(a, b):
     c = a + b
     return (c & 0xffff) + (c >> 16)
 
-def checksum(msg):
-   s = 0
-   for i in range(0, len(msg), 2):
-       w = ord(msg[i]) + (ord(msg[i+1]) << 8)
-       s = carry_around_add(s, w)
-   return ~s & 0xffff
+def checksum(msg, opcao):
+   	s = 0
+	if len(msg) % 2 == 1:
+            msg += "\0"
+   	for i in range(0, len(msg), 2):
+       		w = ord(msg[i]) + (ord(msg[i+1]) << 8)
+       		s = carry_around_add(s, w)
+   	if(opcao == 0):
+   		return ~s & 0xffff
+	else:
+		return s & 0xffff
    
-#teste = "abcdefghijklmnopqrst"
-#chk = checksum(teste)
-#msg_type = '\x08;' # ICMP Echo Request
-#msg_code = '\x00;' # must be zero
-#msg_checksum_padding = '' # "...with value 0 substituted for this field..."
-#rest_header = "arquivo;" # from pcap
-#entire_message = msg_type + msg_code + msg_checksum_padding + rest_header + teste
-#entire_chk = checksum(entire_message)
-#print(entire_message)
-#print ('{:x}'.format(entire_chk))
-#print("Checksum : 0x%04x" % checksum(entire_message))
-#new_checked =  "0x%04x;"% entire_chk + rest_header  + teste
-#print(new_checked)
+
 
 
 #variaveis globais que serao usadas para enviar os dados e receber o ack
@@ -43,15 +36,15 @@ ack = -1
 numSeq = 0
 numSeqBase = 0
 i = 0
-checksum = 0
-lock = threading.Lock()
+checkSum = 0
+look = threading.Lock()
 pacotes = []
 
 timeout = 5
 
 def definirReenvio(signum, stack):
 
-	lock.acquire()
+	look.acquire()
 	global timeout
 	print 'Houve timeout'
 	global i
@@ -62,7 +55,7 @@ def definirReenvio(signum, stack):
 	print numSeq
 	signal.alarm(timeout)
 
-	lock.release()
+	look.release()
 
 servidorSocket = socket(AF_INET, SOCK_DGRAM)
 signal.signal(signal.SIGALRM, definirReenvio)
@@ -85,7 +78,7 @@ def receberAck():
 
 	while 1:
 
-		lock.acquire()
+		look.acquire()
 
 		mensagem = servidorSocket.recvfrom(2048)[0]
 			
@@ -101,7 +94,7 @@ def receberAck():
 		print "Recebito ACK " + parts[1]
 		
 		# verificar se nao eh necessario fazer uso do >=
-		if (ack == -1):
+		if (ack == - 1):
 			print "Todos os ACKs recebidos."
 			break
 		if (ack >= numSeqBase):
@@ -113,7 +106,7 @@ def receberAck():
 		print i
 
 	
-		lock.release()
+		look.release()
 
 
 
@@ -161,13 +154,15 @@ def main():
 	
 				#pacote eh transmitido em ordem
 				while 1:
-					if (i == (len(pacotes))):
+					if (i == (len(pacotes) - 1)):
 						print numSeq
 						break
 
 					if (numSeq <= numSeqMax):
 				
-						res = str(checksum) + ";" + str(numSeq) + ";" + pacotes[i] + ";"
+   						pacoteSemCheckSum = str(numSeq) + ";" + pacotes[i] + ";"
+						valorCheckSum = checksum(pacoteSemCheckSum, 0)
+						res = str(valorCheckSum) + ";" + pacoteSemCheckSum
 						# [melhorar depois] mensagem avisando que foi enviado o pacote
 						print "Enviando pacote de dados com cabecalho: " + res + "/" + str(len(pacotes))				    
 						servidorSocket.sendto(res, enderecoReceptor)
@@ -185,18 +180,23 @@ def main():
 					#print numSeq
 	
 				numSeq = -1
-				res = str(checksum) + ";" +str(numSeq) + ";"
+				pacoteSemCheckSum = str(numSeq) + ";" + pacotes[i] + ";"
+				valorCheckSum = checksum(pacoteSemCheckSum, 0)
+				res = str(valorCheckSum) + ";" + pacoteSemCheckSum
 				servidorSocket.sendto(res, enderecoReceptor)
 				arquivo.close()
-				t_receptor.join()
 				
 			except IOError:	
 				numSeq = -1
-				res = str(checksum) + ";" +str(numSeq) + ";Arquivo nao encontrado"
+				pacoteSemCheckSum = str(numSeq) + ";Arquivo nao encontrado"
+				valorCheckSum = checksum(pacoteSemCheckSum, 0)
+				res = str(valorCheckSum) + ";" + pacoteSemCheckSum
 				servidorSocket.sendto(res, enderecoReceptor)
 	 
 				print "Arquivo solicitado nao encontrado."
-					
+						
+
+			t_receptor.join()
 						
 		else:
 			print "Espera-se o seguinte parametro: numero de porta do servico"
