@@ -9,31 +9,23 @@ def carry_around_add(a, b):
     c = a + b
     return (c & 0xffff) + (c >> 16)
 
-def checksum(msg):
-   s = 0
-   for i in range(0, len(msg), 2):
-       w = ord(msg[i]) + (ord(msg[i+1]) << 8)
-       s = carry_around_add(s, w)
-   return ~s & 0xffff
+def checksum(msg, opcao):
+   	s = 0
+	if len(msg) % 2 == 1:
+            msg += "\0"
+   	for i in range(0, len(msg), 2):
+       		w = ord(msg[i]) + (ord(msg[i+1]) << 8)
+       		s = carry_around_add(s, w)
+   	if(opcao == 0):
+   		return ~s & 0xffff
+	else:
+		return s & 0xffff
    
 
- #teste = "abcdefghijklmnopqrst"
-#chk = checksum(teste)
-#msg_type = '\x08;' # ICMP Echo Request
-#msg_code = '\x00;' # must be zero
-#msg_checksum_padding = '' # "...with value 0 substituted for this field..."
-#rest_header = "arquivo;" # from pcap
-#entire_message = msg_type + msg_code + msg_checksum_padding + rest_header + teste
-#entire_chk = checksum(entire_message)
-#print(entire_message)
-#print ('{:x}'.format(entire_chk))
-#print("Checksum : 0x%04x" % checksum(entire_message))
-#new_checked =  "0x%04x;"% entire_chk + rest_header  + teste
-#print(new_checked) 
-
 def makeAck(numAck):
-
 	ack = str(numAck) + ";"
+	checkSum = checkSum(ack, 0)
+	ack =  str(checkSum) + ";" + ack
 	return ack
 
 
@@ -60,34 +52,49 @@ def main():
 		while 1:
 			resMessage = receptorSocket.recvfrom(8192)[0]
 			parts  = resMessage.split(";")
-			nroSeqRecebido = int(parts[0])
+			nroSeqRecebido = int(parts[1])
 			print "Numero de sequencia recebido: " + str(nroSeqRecebido) + ". Esperava-se o numero de sequencia: " + str(nroSeqEsperado)
 			
 			#primeira verificacao a ser feita
 			#segundo nossa implementacao, quando o nro de seq for -1 (considerando um pacote nao corrompido)
 			#existem duas possibilidades: ou essa eh a ultima parte do arquivo, ou o arquivo nao foi encontrado
-			if(nroSeqRecebido == -1):
-				if(parts[1] == "Arquivo nao encontrado"):
-					arquivo.close()
-					break
-				else:
+
+			#considerando que o checksum vem logo apos o numero de sequencia no cabecalho, no teste para verificacao ele sera desconsiderado
+			#
+			verificacao = resMessage.split(";", 1)
+			checkSum = int(verificacao[0])
+			mensagemSemChecksum = verificacao[1]
+			
+			somaDoPacote = checksum(mensagemSemChecksum, 1)
+			
+			soma = checkSum + somaDoPacote
+			#nao houve alteracao nos dados
+			if(soma == 65535):
+
+				if(nroSeqRecebido == -1):
+					if(parts[1] == "Arquivo nao encontrado"):
+						arquivo.close()
+						break
+					else:
+						arquivo.write(parts[1])
+						arquivo.close()
+						break
+						
+				
+				if(nroSeqRecebido == nroSeqEsperado):
 					arquivo.write(parts[1])
-					arquivo.close()
-					break
-					
-	
-			if(nroSeqRecebido == nroSeqEsperado):
-				#if checksum esta ok
-				arquivo.write(parts[1])
-				ack = makeAck(nroSeqRecebido)
-				receptorSocket.sendto(ack, (nomeHost, numPort))
-				print "Enviando Ack " + str(nroSeqRecebido)
-				nroSeqEsperado = nroSeqEsperado + 1
+					ack = makeAck(nroSeqRecebido)
+					receptorSocket.sendto(ack, (nomeHost, numPort))
+					print "Enviando Ack " + str(nroSeqRecebido)
+					nroSeqEsperado = nroSeqEsperado + 1
+				else:
+					ack = makeAck(nroSeqEsperado)
+					receptorSocket.sendto(ack, (nomeHost, numPort))
+					print "Reenviando Ack " + str(nroSeqEsperado)
 			else:
 				ack = makeAck(nroSeqEsperado)
 				receptorSocket.sendto(ack, (nomeHost, numPort))
 				print "Reenviando Ack " + str(nroSeqEsperado)
-
 				
 		receptorSocket.close()	
 	else:
