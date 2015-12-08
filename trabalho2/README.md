@@ -11,10 +11,9 @@ O objetivo deste trabalho é usar sockets em UDP juntamente com a linguagem Pyth
 
 No nosso projeto, implementamos um protocolo simples de controle de congestionamento baseado em janela (window-based) e construído a partir de um protocolo Go-Back-N. Este protocolo visa o envio de um determinado número de pacotes (via Socket UDP). Assim, deveremos dividir uma mensagem em pacotes, ou seja, dividir a mensagem em pequenos fragmentos para serem enviadas. Para tal, foram desenvolvidos dois códigos que serviram como um cliente e um servidor para a aplicação acima mencionada.
 
-### Emissor.py (O Servidor)
+### Emissor.py (servidor)
 
 Este código atuará como um servidor, ou seja, receberá uma solicitação (mensagem) de um cliente e então enviará o arquivo solicitado pelo cliente via UDP. Nosso código, além do envio da solicitação do arquivo para o cliente, será responsável pelas seguintes funções:
-
 * #### Dividir o arquivo solicitado em pacotes
 
 	Uma vez solicitado um arquivo pelo cliente, o emissor será responsável por criar pacotes, ou seja, pequenos fragmentos do arquivo para serem enviados, caso o arquivo solicitado exista. Abaixo, o trecho de código responsável pela quebra da mensagem de acordo  com o tamanho do pacote:
@@ -22,15 +21,15 @@ Este código atuará como um servidor, ou seja, receberá uma solicitação (men
     ```python
     def dividirMensagem(tamanhoPacote, mensagem):
 
-	pacotes = []
-	tamanho = int(math.ceil(len(mensagem) / (tamanhoPacote * 1.0)))
+		pacotes = []
+		tamanho = int(math.ceil(len(mensagem) / (tamanhoPacote * 1.0)))
 
-	for i in range (0, tamanho):
-		inicio = i * tamanhoPacote
-		fim = inicio + tamanhoPacote
-		pacotes.append(mensagem[inicio:fim])
+      	for i in range (0, tamanho):
+          inicio = i * tamanhoPacote
+          fim = inicio + tamanhoPacote
+          pacotes.append(mensagem[inicio:fim])
 
-	return pacotes
+		return pacotes
   ```
   A função acima é a responsável dividir a a mensagem no tamanho definido do pacote e salvá-la em um vetor de string. Como a mensagem deverá ser recebida em uma ordem correta para posterior montagem do arquivo, utilizou-se um número de sequência para determinar a ordem gerada dos pacotes. No nosso código, o indice do vetor vai representar o numero de sequência do pacote.
   
@@ -53,7 +52,7 @@ Este código atuará como um servidor, ou seja, receberá uma solicitação (men
   
 * #### Gerar o checksum das informações contidas no pacote
 
-Uma vez que estamos utilizando o protocolo UDP, o envio das informações não é feita de forma a prover determinada segurança em perdas ou alterações nas mensagens evniadas. Por isso, para garantir uma maior confiabilidade no envio e entrega correta dos dados, tanto nosso Servidor quanto nosso Cliente farão o que chamamos de checksum dos bits contidos nos pacotes. Isso garantirá que o receptor saiba se a mensagem sofreu alguma alteração em seu envio e poderá retornar para o emissor que ocorreu alguma falha na mensagem. 
+Uma vez que estamos utilizando o protocolo UDP, o envio das informações não é feita de forma a prover determinada segurança em perdas ou alterações nas mensagens enviadas. Por isso, para garantir uma maior confiabilidade no envio e entrega correta dos dados, tanto nosso Servidor quanto nosso Cliente farão o que chamamos de checksum dos bits contidos nos pacotes. Isso garantirá que o receptor saiba se a mensagem sofreu alguma alteração em seu envio e poderá retornar para o emissor que ocorreu alguma falha na mensagem. 
 
 O checksum, basicamente, deverá fazer uma operação de adição nos bits do pacote e, caso haja um carry no bit mais siginificativo, deverá ocorrer um Wrap Around, que é o envio do bit de carry para o bit menos significativo e, então, somá-lo. Após feita a soma de todos os bits, deve-se fazer o complemento de 1 no resultado final. Este valor será o número de checksum enviado.
 ```python    
@@ -117,8 +116,8 @@ def receberAck():
 		else:
 			print "Corrupcao no ack recebido!"
 ```
-Também escreverá algumas mensagens na tela, informando os passos de sua execução, como, por exemplo: print "Enviando pacote de dados de finalizacao da conexão." Outra funcionalidade do emissor é uma função que gera uma determinada probabilidade de ocorrer perda, corrupção ou o envio normal de um determinado pacote, apenas para motivos de estudo e de uma melhor implementação da segurança e confiabilidade do projeto. A função está definida abaixo: 
-```python  
+Também, é definido mensagens que aparecerão na  tela, informando os passos de sua execução, como, por exemplo: print "Enviando pacote de dados de finalizacao da conexão." Outra funcionalidade do emissor é uma função que a partir da probabilidade informada verifica se deve ocorrer perda, corrupção ou o envio normal de um determinado pacote. Isso ocorre graças a um número inteiro utilizado para simular essa probabilidade. Após isso fará o envio da mensagem normal, ou corrompida, ou não fará o envio caso seja perda. A função está definida abaixo: 
+```  python
 def mySendTo(nroSeq, res, enderecoReceptor, probPerda, probCorrupcao):
 	if(probPerda < 1):
 		probPerda = probPerda * 10
@@ -137,22 +136,21 @@ def mySendTo(nroSeq, res, enderecoReceptor, probPerda, probCorrupcao):
 		servidorSocket.sendto(res, enderecoReceptor)
 ```  
 
-* #### Mensagens geradas
+* #### Mensagens geradas para 
+	* res = str(valorCheckSum) + ";" + pacoteSemCheckSum
+	* print "Reenviando pacote de dados com cabecalho: " + res + "/" + str(len(pacotes))
+	* print "Corrupcao no ack recebido!"
+	* print "Numero seqBase: " + str(numSeqBase)
+	* print "Numero seqMax: " + str(numSeqMax)
+	* print "O servidor esta pronto para receber."
+	* print "Arquivo solicitado: " + mensagem
+	* print "Enviando pacote de dados com cabecalho: " + res + "/" + str(len(pacotes))	
+	* print "Enviando pacote de dados de finalizacao da conexão."
+	* print "Arquivo solicitado nao encontrado."
+	* print "Espera-se o seguinte parametro: numero de porta do servico, tamanho da janela, probabilidade de perda e probabilidade de 		corrupcao."
 
-* res = str(valorCheckSum) + ";" + pacoteSemCheckSum
-* print "Reenviando pacote de dados com cabecalho: " + res + "/" + str(len(pacotes))
-* print "Corrupcao no ack recebido!"
-* print "Numero seqBase: " + str(numSeqBase)
-* print "Numero seqMax: " + str(numSeqMax)
-* print "O servidor esta pronto para receber."
-* print "Arquivo solicitado: " + mensagem
-* print "Enviando pacote de dados com cabecalho: " + res + "/" + str(len(pacotes))	
-* print "Enviando pacote de dados de finalizacao da conexão."
-* print "Arquivo solicitado nao encontrado."
-* print "Espera-se o seguinte parametro: numero de porta do servico, tamanho da janela, probabilidade de perda e probabilidade de 		corrupcao."
 
-
-#### Para a execução do emissor.py, basta colocar o nome do arquivo com a porta com que se deseja que o emissor envie e receba mensagens. Por exemplo: "python emissor.py <80>", em que será utilizada a porta 80. 
+#### Para a execução do emissor.py, basta colocar o nome do arquivo com a porta com que se deseja que o emissor envie e receba mensagens, a probabilidade de perda e de corrupção desejada. Por exemplo: "python emissor.py <80> <0.4> <0.1>", em que será utilizada a porta 80, a probabilidade de perda é 0.4 e de corrupção 0.1". 
 
 ### Receptor.py (O Cliente)
 
