@@ -57,6 +57,7 @@ def main():
 		#sequência na ordem correta, o nroSeqEsperado é atualizado com o próximo valor de número de sequência que
 		#se espera
 		nroSeqEsperado = 0
+		ultimoAck = 0
 		arquivo = open('ArquivoRecebido.out', 'w')
 		while 1:
 			resMessage = receptorSocket.recvfrom(8192)[0]
@@ -67,23 +68,22 @@ def main():
 			#no delimitador ;
 			if(len(parts) >= 3):
 				nroSeqRecebido = int(parts[1])
-			
-				#segundo nossa implementacao, quando o nro de seq for -1 (considerando um pacote nao corrompido)
-				#existem duas possibilidades: ou essa eh a ultima parte do arquivo, ou o arquivo nao foi encontrado
-
 				#considerando que o checksum vem logo apos o numero de sequencia no cabecalho, no teste para verificacao ele sera desconsiderado
 				verificacao = resMessage.split(";", 1)
 				checkSum = int(verificacao[0])
 				mensagemSemChecksum = verificacao[1]
-			
+				#realizando a soma dos dados do pacote, desconsiderando o campo de checksum
 				somaDoPacote = checksum(mensagemSemChecksum, 1)
 
-			
+				#considerando o valor de checksum recebido no pacote, e a soma dos dados do pacote é feita a soma desses valores
+				#essa soma deve resultar em FFFF, que equivale a 65535 em decimal
 				soma = checkSum + somaDoPacote
-				print "A soma eh " + str(soma)
+				print "A soma do checksum é: " + str(soma)
 			
 				if(soma == 65535):
 					print "Numero de sequencia recebido: " + str(nroSeqRecebido) + ". Esperava-se o numero de sequencia: " + str(nroSeqEsperado)
+					#segundo nossa implementacao, quando o nro de seq for -1 (considerando um pacote nao corrompido)
+					#existem duas possibilidades: ou essa eh a ultima parte do arquivo, ou o arquivo nao foi encontrado
 					if(nroSeqRecebido == -1):
 						if(parts[2] == 'Arquivo nao encontrado'):
 							print "Arquivo nao encontrado"
@@ -93,9 +93,11 @@ def main():
 							arquivo.close()
 						break
 						
-				
+					#se o número de sequência recebido é aquele que é esperado, então um ack é enviado confirmando o pacote recebido e o número esperado é incrementado
 					if(nroSeqRecebido == nroSeqEsperado):
 						arquivo.write(parts[2])
+						#o ultimoAck enviado é atualizado com o último nro de sequência recebido. Essa atualização serve para os casos em que
+						# der erro, e deve ser reenviado o último ack
 						ultimoAck = nroSeqRecebido
 						ack = makeAck(ultimoAck)
 						receptorSocket.sendto(ack, (nomeHost, numPort))
