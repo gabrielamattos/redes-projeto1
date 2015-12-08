@@ -68,12 +68,10 @@ def main():
 			if(len(parts) >= 3):
 				nroSeqRecebido = int(parts[1])
 			
-				#primeira verificacao a ser feita
 				#segundo nossa implementacao, quando o nro de seq for -1 (considerando um pacote nao corrompido)
 				#existem duas possibilidades: ou essa eh a ultima parte do arquivo, ou o arquivo nao foi encontrado
 
 				#considerando que o checksum vem logo apos o numero de sequencia no cabecalho, no teste para verificacao ele sera desconsiderado
-			
 				verificacao = resMessage.split(";", 1)
 				checkSum = int(verificacao[0])
 				mensagemSemChecksum = verificacao[1]
@@ -93,8 +91,6 @@ def main():
 						else:
 							arquivo.write(parts[2])
 							arquivo.close()
-							ack = makeAck(-1)
-							receptorSocket.sendto(ack, (nomeHost, numPort))
 						break
 						
 				
