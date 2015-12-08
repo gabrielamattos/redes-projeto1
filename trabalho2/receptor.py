@@ -39,6 +39,23 @@ def makeAck(numAck):
 	ack =  str(checkSum) + ";" + ack
 	return ack
 
+def mySendTo(numAck, ack, receptorSocket, nomeHost, numPort, probPerda, probCorrupcao):
+	if(probPerda < 1):
+		probPerda = probPerda * 10
+	if(probCorrupcao < 1):
+		probCorrupcao = probCorrupcao * 10
+	#Para decidir se havera perda ou corrupcao
+	x = random.randint(1,10)
+	y = random.randint(1,10)
+
+	if(x < probPerda):
+		print "Perda do Ack " + str(numAck)
+	elif (y < probCorrupcao):
+		ack = "1234;90"
+		receptorSocket.sendto(ack, (nomeHost, numPort))
+	else:
+		receptorSocket.sendto(ack, (nomeHost, numPort))
+
 #Função principal, para tratamento dos pacotes recebidos
 def main():
 	
@@ -49,7 +66,11 @@ def main():
 		numPort = int(sys.argv[2])
 		nomeArq = sys.argv[3]
 		PL = float(sys.argv[4])
+		if(PL > 0.4 or PL < 0.0):
+			PL = 0.4
 		PC = float(sys.argv[5])
+		if(PC > 0.4 or PC < 0.0):
+			PC = 0.4
 		msgInicial = nomeArq
 		#estabelecendo uma espécie de "conexão" antes de inicializar a transmissao dos dados, representada pela 
 		#requisição do arquivo
@@ -103,7 +124,7 @@ def main():
 						# der erro, e deve ser reenviado o último ack
 						ultimoAck = nroSeqRecebido
 						ack = makeAck(ultimoAck)
-						receptorSocket.sendto(ack, (nomeHost, numPort))
+						mySendTo(ultimoAck, ack, receptorSocket, nomeHost, numPort, PL, PC)
 						print "Enviando Ack " + str(nroSeqRecebido)
 						#atualizando o próximo número de sequência esperado
 						nroSeqEsperado = nroSeqEsperado + 1
@@ -111,19 +132,19 @@ def main():
 						#Se não for o número de sequência esperado, esse pacote é descartado, pois deve ser recebido em ordem
 						ack = makeAck(ultimoAck)
 						#o ultimo ack confirmado é reenviado, para indicar o erro
-						receptorSocket.sendto(ack, (nomeHost, numPort))
+						mySendTo(ultimoAck, ack, receptorSocket,nomeHost, numPort, PL, PC)
 						print "Reenviando Ack " + str(ultimoAck)
 				else:	
 					#Se a soma não está correta, corrupção foi detectada no pacote, e o ack deve ser reenviado para indicar erro
 					print "Corrupcao detectada no pacote!"
 					ack = makeAck(ultimoAck)
-					receptorSocket.sendto(ack, (nomeHost, numPort))
+					mySendTo(ultimoAck, ack, receptorSocket,nomeHost, numPort, PL, PC)
 					print "Reenviando Ack " + str(ultimoAck)
 
 			else:
 				print "Corrupcao detectada no pacote!"
 				ack = makeAck(ultimoAck)
-				receptorSocket.sendto(ack, (nomeHost, numPort))
+				mySendTo(ultimoAck, ack, receptorSocket,nomeHost, numPort, PL, PC)
 				print "Reenviando Ack " + str(ultimoAck)
 					
 		receptorSocket.close()	
