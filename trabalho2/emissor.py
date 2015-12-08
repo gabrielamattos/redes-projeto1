@@ -118,16 +118,14 @@ def receberAck():
 		global numSeqMax
 
 		parts  = mensagem.split(";", 1)
-		ack = int(parts[1])
-		print "Recebido ACK " + parts[1]
-
-		checkSum = int(parts[0])		
-		somaDoPacote = checksum(parts[1], 1)
-
-		soma = checkSum + somaDoPacote
-		
-		
 		if (len(parts) == 2):
+			ack = int(parts[1])
+			print "Recebido ACK " + parts[1]
+
+			checkSum = int(parts[0])		
+			somaDoPacote = checksum(parts[1], 1)
+
+			soma = checkSum + somaDoPacote
 			if(soma == 65535):		
 				if (ack == (len(pacotes)-1)):
 					print "Todos os ACKs recebidos."
