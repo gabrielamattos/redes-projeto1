@@ -93,10 +93,7 @@ def main():
 					if(nroSeqRecebido == -1):
 						if(parts[2] == 'Arquivo nao encontrado'):
 							print "Arquivo nao encontrado"
-							arquivo.close()
-						else:
-							arquivo.write(parts[2])
-							arquivo.close()
+						arquivo.close()
 						break
 						
 					#se o número de sequência recebido é aquele que é esperado, então um ack é enviado confirmando o pacote recebido e o número esperado é incrementado
