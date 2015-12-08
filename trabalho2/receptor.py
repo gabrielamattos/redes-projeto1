@@ -84,7 +84,7 @@ def main():
 		#sequência na ordem correta, o nroSeqEsperado é atualizado com o próximo valor de número de sequência que
 		#se espera
 		nroSeqEsperado = 0
-		ultimoAck = 0
+		ultimoAck = -1
 		arquivo = open('ArquivoRecebido.out', 'w')
 		while 1:
 			resMessage = receptorSocket.recvfrom(8192)[0]
