@@ -94,7 +94,7 @@ def dividirMensagem(tamanhoPacote, mensagem):
 	return pacotes
 
 def receberAck():
-	print " bido ACK "
+
 	while 1:
 
 		global ack
@@ -117,8 +117,6 @@ def receberAck():
 				numSeqBase = ack
 				if (numSeqMax >= len(pacotes)):
 					numSeqMax = len(pacotes) - 1
-				print numSeqBase
-				print numSeqMax
 				signal.alarm(timeout)
 
 def main():
