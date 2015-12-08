@@ -15,8 +15,9 @@ import math
 import numpy
 import threading
 import signal
+import random
 
-#fonte do checksum como base ea stackoverflow.com a maioria das pessoas usa essa funcao como base.
+#Definição da operação de checksum, com base no link especificado
 def carry_around_add(a, b):
     c = a + b
     return (c & 0xffff) + (c >> 16)
@@ -66,7 +67,7 @@ def definirReenvio(signum, stack):
 	for x in range(numSeqBase, numSeqMax+1):
 		res = gerarMensagem(x, pacotes[x])
 		print "Reenviando pacote de dados com cabecalho: " + res + "/" + str(len(pacotes))				    
-		servidorSocket.sendto(res, end)
+		mySendTo(x, res, end, probPerda, probCorrupcao)
 
 # Uso do signal para setar alarme do timeout
 signal.signal(signal.SIGALRM, definirReenvio)
@@ -74,10 +75,21 @@ signal.signal(signal.SIGALRM, definirReenvio)
 # Nome da funcao: mySendTo()
 # Objetivo: vai determinar apartir da probabilidade se deve ocorrer perda, corrupcao ou envio normal
 def mySendTo(nroSeq, res, enderecoReceptor, probPerda, probCorrupcao):
-	if(nroSeq != 3):
+	if(probPerda < 1):
+		probPerda = probPerda * 10
+	if(probCorrupcao < 1):
+		probCorrupcao = probCorrupcao * 10
+	#Para decidir se havera perda ou corrupcao
+	x = random.randint(1,10)
+	y = random.randint(1,10)
+
+	if(x < probPerda):
+		print "Perda do pacote " + str(nroSeq)
+	elif (y < probCorrupcao):
+		res = "1234;90;0002j;"
 		servidorSocket.sendto(res, enderecoReceptor)
 	else:
-		print "Perda do pacote 3"
+		servidorSocket.sendto(res, enderecoReceptor)
 		
 # Nome da funcao: dividirMensagem()
 # Objetivo: dividir a a mensagem no tamanho definido do pacote e salvar em um vetor de string, o indice do vetor vai representar o numero de sequencia
@@ -93,6 +105,8 @@ def dividirMensagem(tamanhoPacote, mensagem):
 
 	return pacotes
 
+# Nome da funcao: receberAck()
+# Objetivo: receber o ack e fazer o deslizamento da janela.
 def receberAck():
 
 	while 1:
@@ -103,23 +117,33 @@ def receberAck():
 		global numSeqBase
 		global numSeqMax
 
-		parts  = mensagem.split(";")
+		parts  = mensagem.split(";", 1)
 		ack = int(parts[1])
 		print "Recebido ACK " + parts[1]
 
+		checkSum = int(parts[0])		
+		somaDoPacote = checksum(parts[1], 1)
+
+		soma = checkSum + somaDoPacote
+		
+		
 		if (len(parts) == 2):
-			print len(parts)		
-			if (ack == (len(pacotes)-1)):
-				print "Todos os ACKs recebidos."
-				break
-			if (ack >= numSeqBase):
-				numSeqBase = ack + 1
-				numSeqMax = numSeqBase + tamanhoJanela-1
-				print "Numero seqBase: " + str(numSeqBase)
-				print "Numero seqMax: " + str(numSeqMax)
-				if (numSeqMax >= len(pacotes)):
-					numSeqMax = len(pacotes) - 1
-				signal.alarm(timeout)
+			if(soma == 65535):		
+				if (ack == (len(pacotes)-1)):
+					print "Todos os ACKs recebidos."
+					break
+				if (ack >= numSeqBase):
+					numSeqBase = ack + 1
+					numSeqMax = numSeqBase + tamanhoJanela-1
+					print "Numero seqBase: " + str(numSeqBase)
+					print "Numero seqMax: " + str(numSeqMax)
+					if (numSeqMax >= len(pacotes)):
+						numSeqMax = len(pacotes) - 1
+					signal.alarm(timeout)
+			else:
+				print "Corrupcao no ack recebido!"
+		else:
+			print "Corrupcao no ack recebido!"
 	
 
 def main():
@@ -130,6 +154,8 @@ def main():
 	global end
 	global ack
 	global tamanhoJanela
+	global probPerda
+	global probCorrupcao
 
 	tamanhoPacote = 5
 	if(len(sys.argv) != 4):
@@ -137,8 +163,16 @@ def main():
 		# Recebimento de parametros
 		numPort = int(sys.argv[1])
 		tamanhoJanela = int(sys.argv[2])
+
+		# Trata probabilidade de perda
 		probPerda = float(sys.argv[3])
-		probCorrupcao = float(sys.argv[4])		
+		if(probPerda > 0.4 or probPerda < 0.0):
+			probPerda = 0.4
+
+		# Trata probabilidade de corrupcao
+		probCorrupcao = float(sys.argv[4])
+		if(probCorrupcao > 0.4 or probCorrupcao < 0.0):
+			probCorrupcao = 0.4		
 
 		# Criacao de conexao com a porta informada
 		servidorSocket.bind(('', numPort))
