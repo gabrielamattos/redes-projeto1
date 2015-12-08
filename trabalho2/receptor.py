@@ -5,7 +5,9 @@ import sys
 import random
 
 #http://www.diveintopython.net/scripts_and_streams/command_line_arguments.html
+#http://stackoverflow.com/questions/1767910/checksum-udp-calculation-python
 
+#Definicao da operacao de checksum, com base no link especificado
 def carry_around_add(a, b):
     c = a + b
     return (c & 0xffff) + (c >> 16)
@@ -22,7 +24,7 @@ def checksum(msg, opcao):
 	else:
 		return s & 0xffff
    
-
+#Funcao 
 def makeAck(numAck):
 	ack = str(numAck) + ";"
 	checkSum = checksum(ack, 0)
@@ -35,9 +37,10 @@ def main():
 	
 	if (len(sys.argv) > 3):
 		nomeHost = sys.argv[1]
-		nroPort = sys.argv[2]
 		numPort = int(sys.argv[2])
 		nomeArq = sys.argv[3]
+		PL = float(sys.argv[4])
+		PC = float(sys.argv[5])
 		
 
 		#print len(nomeArq)
@@ -46,7 +49,7 @@ def main():
 		#estabelecendo conexao antes de inicializar a transmissao dos dados
 		receptorSocket = socket(AF_INET, SOCK_DGRAM)
 		receptorSocket.sendto(msgInicial, (nomeHost, numPort))
-		print "Requisitando arquivo " + msgInicial + " para o servidor " + nomeHost + " na porta " + nroPort
+		print "Requisitando arquivo " + msgInicial + " para o servidor " + nomeHost + " na porta " + str(numPort)
 		nroSeqEsperado = 0
 		ultimoAck = 0
 		ack = makeAck(ultimoAck)
@@ -54,63 +57,69 @@ def main():
 		while 1:
 			resMessage = receptorSocket.recvfrom(8192)[0]
 			parts  = resMessage.split(";")
-			nroSeqRecebido = int(parts[1])
-			
-			#primeira verificacao a ser feita
-			#segundo nossa implementacao, quando o nro de seq for -1 (considerando um pacote nao corrompido)
-			#existem duas possibilidades: ou essa eh a ultima parte do arquivo, ou o arquivo nao foi encontrado
 
-			#considerando que o checksum vem logo apos o numero de sequencia no cabecalho, no teste para verificacao ele sera desconsiderado
-			#
-			verificacao = resMessage.split(";", 1)
-			checkSum = int(verificacao[0])
-			mensagemSemChecksum = verificacao[1]
+			#primeira verificacao para evitar problemas no acesso ao vetor
+			#se nao for maior ou igual a 3, ja subentende-se que houve corrupcao no pacote, mais especificamente
+			#no delimitador ;
+			if(len(parts) >= 3):
+				nroSeqRecebido = int(parts[1])
 			
-			somaDoPacote = checksum(mensagemSemChecksum, 1)
+				#primeira verificacao a ser feita
+				#segundo nossa implementacao, quando o nro de seq for -1 (considerando um pacote nao corrompido)
+				#existem duas possibilidades: ou essa eh a ultima parte do arquivo, ou o arquivo nao foi encontrado
+
+				#considerando que o checksum vem logo apos o numero de sequencia no cabecalho, no teste para verificacao ele sera desconsiderado
+			
+				verificacao = resMessage.split(";", 1)
+				checkSum = int(verificacao[0])
+				mensagemSemChecksum = verificacao[1]
+			
+				somaDoPacote = checksum(mensagemSemChecksum, 1)
 
 			
-			soma = checkSum + somaDoPacote
-			print "A soma eh " + str(soma)
+				soma = checkSum + somaDoPacote
+				print "A soma eh " + str(soma)
 			
-			#para teste
-			#soma = 65535
-			#nao houve alteracao nos dados
-			if(soma == 65535):
-				print "Numero de sequencia recebido: " + str(nroSeqRecebido) + ". Esperava-se o numero de sequencia: " + str(nroSeqEsperado)
-				if(nroSeqRecebido == -1):
-					if(parts[2] == 'Arquivo nao encontrado'):
-						print "Arquivo nao encontrado"
-						arquivo.close()
-					else:
-						arquivo.write(parts[2])
-						arquivo.close()
-					break
+				if(soma == 65535):
+					print "Numero de sequencia recebido: " + str(nroSeqRecebido) + ". Esperava-se o numero de sequencia: " + str(nroSeqEsperado)
+					if(nroSeqRecebido == -1):
+						if(parts[2] == 'Arquivo nao encontrado'):
+							print "Arquivo nao encontrado"
+							arquivo.close()
+						else:
+							arquivo.write(parts[2])
+							arquivo.close()
+						break
 						
 				
-				if(nroSeqRecebido == nroSeqEsperado):
-					arquivo.write(parts[2])
-					ultimoAck = nroSeqRecebido
-					ack = makeAck(ultimoAck)
-					receptorSocket.sendto(ack, (nomeHost, numPort))
-					print "Enviando Ack " + str(nroSeqRecebido)
-					nroSeqEsperado = nroSeqEsperado + 1
-				else:
+					if(nroSeqRecebido == nroSeqEsperado):
+						arquivo.write(parts[2])
+						ultimoAck = nroSeqRecebido
+						ack = makeAck(ultimoAck)
+						receptorSocket.sendto(ack, (nomeHost, numPort))
+						print "Enviando Ack " + str(nroSeqRecebido)
+						nroSeqEsperado = nroSeqEsperado + 1
+					else:
+						ack = makeAck(ultimoAck)
+						receptorSocket.sendto(ack, (nomeHost, numPort))
+						print "Reenviando Ack " + str(ultimoAck)
+				else:	
+					print "Corrupcao detectada no pacote!"
 					ack = makeAck(ultimoAck)
 					receptorSocket.sendto(ack, (nomeHost, numPort))
 					print "Reenviando Ack " + str(ultimoAck)
+
 			else:
-				print "Corrupcao detectada no pacote! "
+				print "Corrupcao detectada no pacote!"
 				ack = makeAck(ultimoAck)
 				receptorSocket.sendto(ack, (nomeHost, numPort))
 				print "Reenviando Ack " + str(ultimoAck)
-				
+					
 		receptorSocket.close()	
 	else:
-		print "Espera-se os argumentos: hostname do rementente, numero de porta do rementente e nome do arquivo."
+		print "Espera-se os argumentos: hostname do rementente, numero de porta do rementente, nome do arquivo, probabilidade de perda (um numero entre 0.0 e 0.4, com uma casa decimal), e probabilidade de corrupcao (um numero entre 0.0 e 0.4, com uma casa decimal)"
 
 
 
 
 main()
-	
-		
