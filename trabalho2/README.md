@@ -3,7 +3,7 @@ Guilherme Noriyuki Ichi Toshimitsu 386200
 Rodolfo Barcelar 495921
 
 
-# # Intrudução e Objetivos
+# Introdução e Objetivos
 
 O objetivo deste trabalho é usar sockets em UDP juntamente com a linguagem Python de programação para implementar um protocolo de transferência confiável de dados.
 
@@ -73,7 +73,7 @@ O checksum, basicamente, deverá fazer uma operação de adição nos bits do pa
 Para a verificação do checksum, basta compará-lo com o número 0xffff. Caso algum valor seja diferente de 1, o checksum indica um erro.
 
 * #### Algumas outras funções
-
+* 
 Além das funções citadas acima, o emissor também será responsável por receber ACKs (acknowledgments), que são os responsáveis por informar que o receptor recebeu a mensagem (pacote).
 ```python
 def receberAck():
@@ -135,6 +135,7 @@ def mySendTo(nroSeq, res, enderecoReceptor, probPerda, probCorrupcao):
 ```  
 
 * #### Mensagens geradas
+
 * res = str(valorCheckSum) + ";" + pacoteSemCheckSum
 * print "Reenviando pacote de dados com cabecalho: " + res + "/" + str(len(pacotes))
 * print "Corrupcao no ack recebido!"
@@ -205,6 +206,7 @@ def simpleTest():
 simpleTest()
 ```
 * #### Mensagens geradas
+
 * print "Requisitando arquivo " + msgInicial + " para o servidor " + nomeHost + " na porta " + str(numPort)
 * print "A soma do checksum é: " + str(soma)
 * print "Numero de sequencia recebido: " + str(nroSeqRecebido) + ". Esperava-se o numero de sequencia: " + str(nroSeqEsperado)
