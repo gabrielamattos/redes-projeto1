@@ -73,6 +73,7 @@ O checksum, basicamente, deverá fazer uma operação de adição nos bits do pa
 ```
 Para a verificação do checksum, basta compará-lo com o número 0xffff. Caso algum valor seja diferente de 1, o checksum indica um erro.
 
+
 * #### Algumas outras funções
 
 Além das funções citadas acima, o emissor também será responsável por receber ACKs (acknowledgments), que são os responsáveis por informar que o receptor recebeu a mensagem (pacote).
