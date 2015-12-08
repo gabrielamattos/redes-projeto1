@@ -217,3 +217,8 @@ simpleTest()
 * print "Corrupcao detectada no pacote!"
 * print "Espera-se os argumentos: hostname do rementente, numero de porta do rementente, nome do arquivo, probabilidade de perda (um numero entre 0.0 e 0.4, com uma casa decimal), e probabilidade de corrupcao (um numero entre 0.0 e 0.4, com uma casa decimal)"
 
+# Resultados
+
+![](https://github.com/gabrielamattos/redes-ufscar/blob/master/trabalho2/Fotos%20Resultados/12346919_1672828859664888_1624719873_n.jpg)
+
+![](https://github.com/gabrielamattos/redes-ufscar/blob/master/trabalho2/Fotos%20Resultados/12358094_1672828856331555_1731055159_n.jpg)
