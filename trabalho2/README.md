@@ -12,6 +12,7 @@ No nosso projeto, implementamos um protocolo simples de controle de congestionam
 ### Emissor.py (O Servidor)
 
 Este código atuará como um servidor, ou seja, receberá uma solicitação (mensagem) de um cliente e então enviará o arquivo solicitado pelo cliente via UDP. Nosso código, além do envio da solicitação do arquivo para o cliente, será responsável pelas seguintes funções:
+
 * #### Dividir o arquivo solicitado em pacotes
 
 	Uma vez solicitado um arquivo pelo cliente, o emissor será responsável por criar pacotes, ou seja, pequenos fragmentos do arquivo para serem enviados, caso o arquivo solicitado exista. Abaixo, o trecho de código responsável pela quebra da mensagem de acordo  com o tamanho do pacote:
@@ -73,7 +74,7 @@ O checksum, basicamente, deverá fazer uma operação de adição nos bits do pa
 Para a verificação do checksum, basta compará-lo com o número 0xffff. Caso algum valor seja diferente de 1, o checksum indica um erro.
 
 * #### Algumas outras funções
-* 
+
 Além das funções citadas acima, o emissor também será responsável por receber ACKs (acknowledgments), que são os responsáveis por informar que o receptor recebeu a mensagem (pacote).
 ```python
 def receberAck():
