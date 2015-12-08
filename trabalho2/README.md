@@ -1,6 +1,7 @@
 # Grupo 
-Guilherme Noriyuki Ichi Toshimitsu 386200
-Rodolfo Barcelar 495921
+* Breno da Silveira Souza 551481
+* Guilherme Noriyuki Ichi Toshimitsu 386200
+* Rodolfo Barcelar 495921
 
 
 # Introdução e Objetivos
