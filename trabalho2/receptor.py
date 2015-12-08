@@ -57,8 +57,6 @@ def main():
 		#sequência na ordem correta, o nroSeqEsperado é atualizado com o próximo valor de número de sequência que
 		#se espera
 		nroSeqEsperado = 0
-		ultimoAck = 0
-		ack = makeAck(ultimoAck)
 		arquivo = open('ArquivoRecebido.out', 'w')
 		while 1:
 			resMessage = receptorSocket.recvfrom(8192)[0]
@@ -95,6 +93,8 @@ def main():
 						else:
 							arquivo.write(parts[2])
 							arquivo.close()
+							ack = makeAck(-1)
+							receptorSocket.sendto(ack, (nomeHost, numPort))
 						break
 						
 				
