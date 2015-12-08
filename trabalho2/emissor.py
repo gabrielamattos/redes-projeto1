@@ -212,7 +212,7 @@ def main():
 						break
 
 					# Só envia a mensagem quando o numSeq não atingiu o tamanho da janela
-					if (numSeq <= numSeqMax):
+					if (numSeq <= numSeqMax and numSeq < len(pacotes)):
 
 						res = gerarMensagem(numSeq, pacotes[numSeq])
 						print "Enviando pacote de dados com cabecalho: " + res + "/" + str(len(pacotes))				    
