@@ -74,7 +74,7 @@ Para a verificação do checksum, basta compará-lo com o número 0xffff. Caso a
 
 * #### Algumas outras funções
 
-Além das funções citadas acima, o emissor também será responsável por receber ACKs (acknowledgments), que são os responsáveis por informar que o emissor recebeu a mensagem (pacote).
+Além das funções citadas acima, o emissor também será responsável por receber ACKs (acknowledgments), que são os responsáveis por informar que o receptor recebeu a mensagem (pacote).
 ```python
 def receberAck():
 
