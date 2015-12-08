@@ -1,11 +1,17 @@
 #!/Python27/python
 # -*- coding: utf-8 -*-
+#################################################################################################################
+# 	Nome: receptor.py									    		#									
+# 	Objetivo:  Simular o comportamento do lado receptor com a utilização do go-back-n.			#
+# 	Referencias:												#
+# - http://www.diveintopython.net/scripts_and_streams/command_line_arguments.html				#
+# - http://stackoverflow.com/questions/1767910/checksum-udp-calculation-python					#
+#################################################################################################################
 from socket import *
 import sys
 import random
 
-#http://www.diveintopython.net/scripts_and_streams/command_line_arguments.html
-#http://stackoverflow.com/questions/1767910/checksum-udp-calculation-python
+
 
 #Definição da operação de checksum, com base no link especificado
 def carry_around_add(a, b):
