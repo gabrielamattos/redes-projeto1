@@ -116,7 +116,7 @@ def receberAck():
 		else:
 			print "Corrupcao no ack recebido!"
 ```
-Também escreverá algumas mensagens na tela, informando os passos de sua execução, como, por exemplo: print "Enviando pacote de dados de finalizacao da conexão." Outra funcionalidade do emissor é uma função que calculará a probabilidade de ocorrer perda, corrupção ou o envio normal de um determinado pacote. A função está definida abaixo: 
+Também escreverá algumas mensagens na tela, informando os passos de sua execução, como, por exemplo: print "Enviando pacote de dados de finalizacao da conexão." Outra funcionalidade do emissor é uma função que gera uma determinada probabilidade de ocorrer perda, corrupção ou o envio normal de um determinado pacote, apenas para motivos de estudo e de uma melhor implementação da segurança e confiabilidade do projeto. A função está definida abaixo: 
 ```python  
 def mySendTo(nroSeq, res, enderecoReceptor, probPerda, probCorrupcao):
 	if(probPerda < 1):
@@ -218,4 +218,3 @@ simpleTest()
 * print "Corrupcao detectada no pacote!"
 * print "Espera-se os argumentos: hostname do rementente, numero de porta do rementente, nome do arquivo, probabilidade de perda (um numero entre 0.0 e 0.4, com uma casa decimal), e probabilidade de corrupcao (um numero entre 0.0 e 0.4, com uma casa decimal)"
 
-## Resultados
