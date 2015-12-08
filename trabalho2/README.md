@@ -16,7 +16,7 @@ Este código atuará como um servidor, ou seja, receberá uma solicitação (men
 
 	Uma vez solicitado um arquivo pelo cliente, o emissor será responsável por criar pacotes, ou seja, pequenos fragmentos do arquivo para serem enviados, caso o arquivo solicitado exista. Abaixo, o trecho de código responsável pela quebra da mensagem de acordo  com o tamanho do pacote:
     
-    ```
+    ```python
     def dividirMensagem(tamanhoPacote, mensagem):
 
 	pacotes = []
@@ -35,7 +35,7 @@ Este código atuará como um servidor, ou seja, receberá uma solicitação (men
 
 	Após a geração dos pacotes, deve-se gerar um cabeçalho para cada pacote para que a rede possa ser informada sobre algumas características de envio do pacote e sobre o pacote sendo enviado, uma vez que estamos utilizando um protocolo UDP.
     
-	```
+	```python
 	def gerarMensagem(numS, pacote):
 		pacoteSemCheckSum = str(numS) + ";" + pacote + ";"
 		valorCheckSum = checksum(pacoteSemCheckSum, 0)
@@ -53,7 +53,7 @@ Este código atuará como um servidor, ou seja, receberá uma solicitação (men
 Uma vez que estamos utilizando o protocolo UDP, o envio das informações não é feita de forma a prover determinada segurança em perdas ou alterações nas mensagens evniadas. Por isso, para garantir uma maior confiabilidade no envio e entrega correta dos dados, tanto nosso Servidor quanto nosso Cliente farão o que chamamos de checksum dos bits contidos nos pacotes. Isso garantirá que o receptor saiba se a mensagem sofreu alguma alteração em seu envio e poderá retornar para o emissor que ocorreu alguma falha na mensagem. 
 
 O checksum, basicamente, deverá fazer uma operação de adição nos bits do pacote e, caso haja um carry no bit mais siginificativo, deverá ocorrer um Wrap Around, que é o envio do bit de carry para o bit menos significativo e, então, somá-lo. Após feita a soma de todos os bits, deve-se fazer o complemento de 1 no resultado final. Este valor será o número de checksum enviado.
-```    
+```python    
     def carry_around_add(a, b):
     	c = a + b
     	return (c & 0xffff) + (c >> 16)
@@ -75,7 +75,7 @@ Para a verificação do checksum, basta compará-lo com o número 0xffff. Caso a
 * #### Algumas outras funções
 
 Além das funções citadas acima, o emissor também será responsável por receber ACKs (acknowledgments), que são os responsáveis por informar que o emissor recebeu a mensagem (pacote).
-```
+```python
 def receberAck():
 
 	while 1:
@@ -115,7 +115,7 @@ def receberAck():
 			print "Corrupcao no ack recebido!"
 ```
 Também escreverá algumas mensagens na tela, informando os passos de sua execução, como, por exemplo: print "Enviando pacote de dados de finalizacao da conexão." Outra funcionalidade do emissor é uma função que calculará a probabilidade de ocorrer perda, corrupção ou o envio normal de um determinado pacote. A função está definida abaixo: 
-```  
+```python  
 def mySendTo(nroSeq, res, enderecoReceptor, probPerda, probCorrupcao):
 	if(probPerda < 1):
 		probPerda = probPerda * 10
@@ -159,7 +159,7 @@ Uma vez que o receptor deverá receber as mensagens, ele também deverá fazer o
 
 * #### Envio e recebimento dos ACKs
 Uma vez que o receptor envia e recebe mensagens, ele deve enviar ACKs para informar  sobre o recebimento de mensagens. A formação e envio dos ACKs, é feita formulando-se pacotes que serão enviados. Basicamente, utiliza-se uma função para criação do pacote do ack, que recebe como parâmetro o número do ack, que é correspondente ao número de sequência que foi recebido por último, sem perda nem corrupção, e na ordem. O pacote é simplesmente formado por um campo de checksum e um campo com o número do ack.
-```
+```python
 def makeAck(numAck):
 	ack = str(numAck)
 	checkSum = checksum(ack, 0)
@@ -190,7 +190,7 @@ Algumas outras funções relacionadas ao receptor está na verificação de corr
 ### Topologia
 
 O arquivo topologia.py é um código em python, que utiliza funções do Mininet, e que é responsável por criar a topologia para os nossos testes, ou seja, é responsável por criar uma rede lógica para que possamos testar nossos códigos. Nele, são criados dois hosts h1 e h2 ligados por um linker e um controlador c0. Observe a topologia no código abaixo. Apesar de ser possível determinar parâmetros no link que vão adicionar perda e delay, optamos por deixar o link mais simples e implementamos nossas próprias funções de perda.
-```
+```python
 def simpleTest():
 	
 	net = Mininet(host=CPULimitedHost, link=TCLink)
