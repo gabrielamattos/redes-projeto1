@@ -193,8 +193,7 @@ Algumas outras funções relacionadas ao receptor está na verificação de corr
 
 O arquivo topologia.py é um código em python, que utiliza funções do Mininet, e que é responsável por criar a topologia para os nossos testes, ou seja, é responsável por criar uma rede lógica para que possamos testar nossos códigos. Nele, são criados dois hosts h1 e h2 ligados por um linker e um controlador c0. Observe a topologia no código abaixo. Apesar de ser possível determinar parâmetros no link que vão adicionar perda e delay, optamos por deixar o link mais simples e implementamos nossas próprias funções de perda.
 ```python
-def simpleTest():
-	
+def topologia():
 	net = Mininet(host=CPULimitedHost, link=TCLink)
 	h1 = net.addHost( 'h1', ip='10.0.0.1' ) # h1 is a Host() object
 	h2 = net.addHost( 'h2', ip='10.0.0.2' ) # h2 is a Host()
@@ -203,8 +202,7 @@ def simpleTest():
 	net.start()
 	CLI( net )
 	net.stop()
-
-simpleTest()
+topologia()
 ```
 * #### Mensagens geradas
 
