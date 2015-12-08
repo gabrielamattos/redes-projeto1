@@ -124,29 +124,29 @@ def main():
 						# der erro, e deve ser reenviado o último ack
 						ultimoAck = nroSeqRecebido
 						ack = makeAck(ultimoAck)
-						mySendTo(ultimoAck, ack, receptorSocket, nomeHost, numPort, PL, PC)
 						print "Enviando Ack " + str(nroSeqRecebido)
+						mySendTo(ultimoAck, ack, receptorSocket, nomeHost, numPort, PL, PC)
 						#atualizando o próximo número de sequência esperado
 						nroSeqEsperado = nroSeqEsperado + 1
 					else:
 						#Se não for o número de sequência esperado, esse pacote é descartado, pois deve ser recebido em ordem
 						ack = makeAck(ultimoAck)
-						#o ultimo ack confirmado é reenviado, para indicar o erro
-						mySendTo(ultimoAck, ack, receptorSocket,nomeHost, numPort, PL, PC)
+						#o ultimo ack confirmado é reenviado, para indicar o erro	
 						print "Reenviando Ack " + str(ultimoAck)
+						mySendTo(ultimoAck, ack, receptorSocket,nomeHost, numPort, PL, PC)
+					
 				else:	
 					#Se a soma não está correta, corrupção foi detectada no pacote, e o ack deve ser reenviado para indicar erro
 					print "Corrupcao detectada no pacote!"
 					ack = makeAck(ultimoAck)
-					mySendTo(ultimoAck, ack, receptorSocket,nomeHost, numPort, PL, PC)
 					print "Reenviando Ack " + str(ultimoAck)
+					mySendTo(ultimoAck, ack, receptorSocket,nomeHost, numPort, PL, PC)
 
 			else:
 				print "Corrupcao detectada no pacote!"
 				ack = makeAck(ultimoAck)
-				mySendTo(ultimoAck, ack, receptorSocket,nomeHost, numPort, PL, PC)
 				print "Reenviando Ack " + str(ultimoAck)
-					
+				mySendTo(ultimoAck, ack, receptorSocket,nomeHost, numPort, PL, PC)	
 		receptorSocket.close()	
 	else:
 		print "Espera-se os argumentos: hostname do rementente, numero de porta do rementente, nome do arquivo, probabilidade de perda (um numero entre 0.0 e 0.4, com uma casa decimal), e probabilidade de corrupcao (um numero entre 0.0 e 0.4, com uma casa decimal)"
