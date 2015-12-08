@@ -102,12 +102,16 @@ def main():
 						ack = makeAck(ultimoAck)
 						receptorSocket.sendto(ack, (nomeHost, numPort))
 						print "Enviando Ack " + str(nroSeqRecebido)
+						#atualizando o próximo número de sequência esperado
 						nroSeqEsperado = nroSeqEsperado + 1
 					else:
+						#Se não for o número de sequência esperado, esse pacote é descartado, pois deve ser recebido em ordem
 						ack = makeAck(ultimoAck)
+						#o ultimo ack confirmado é reenviado, para indicar o erro
 						receptorSocket.sendto(ack, (nomeHost, numPort))
 						print "Reenviando Ack " + str(ultimoAck)
 				else:	
+					#Se a soma não está correta, corrupção foi detectada no pacote, e o ack deve ser reenviado para indicar erro
 					print "Corrupcao detectada no pacote!"
 					ack = makeAck(ultimoAck)
 					receptorSocket.sendto(ack, (nomeHost, numPort))
