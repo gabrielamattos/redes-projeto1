@@ -113,11 +113,14 @@ def receberAck():
 				print "Todos os ACKs recebidos."
 				break
 			if (ack >= numSeqBase):
-				numSeqMax = numSeqMax + (ack - numSeqBase)
-				numSeqBase = ack
+				numSeqBase = ack + 1
+				numSeqMax = numSeqBase + tamanhoJanela-1
+				print "Numero seqBase: " + str(numSeqBase)
+				print "Numero seqMax: " + str(numSeqMax)
 				if (numSeqMax >= len(pacotes)):
 					numSeqMax = len(pacotes) - 1
 				signal.alarm(timeout)
+	
 
 def main():
 	global numSeq
@@ -126,6 +129,7 @@ def main():
 	global pacotes
 	global end
 	global ack
+	global tamanhoJanela
 
 	tamanhoPacote = 5
 	if(len(sys.argv) != 4):
