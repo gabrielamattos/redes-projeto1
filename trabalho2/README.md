@@ -1,7 +1,8 @@
 #Grupo 
 Rodolfo Barcelar 495921
 
-# Intrudução 
+
+# Introdução 
 
 O objetivo deste trabalho é usar sockets em UDP juntamente com a linguagem Python de programação para implementar um protocolo de transferência confiável de dados.
 
