@@ -7,7 +7,7 @@ import random
 #http://www.diveintopython.net/scripts_and_streams/command_line_arguments.html
 #http://stackoverflow.com/questions/1767910/checksum-udp-calculation-python
 
-#Definicao da operacao de checksum, com base no link especificado
+#Definição da operação de checksum, com base no link especificado
 def carry_around_add(a, b):
     c = a + b
     return (c & 0xffff) + (c >> 16)
@@ -24,32 +24,38 @@ def checksum(msg, opcao):
 	else:
 		return s & 0xffff
    
-#Funcao 
+#Função para criação do pacote do ack, que recebe como parâmetro o número do ack, que é correspondente ao número de 
+#sequência que foi recebido por último sem perda nem corrupção e na ordem. O pacote é simplesmente formado por um campo
+#de checksum e um campo com o número do ack.
 def makeAck(numAck):
-	ack = str(numAck) + ";"
+	ack = str(numAck)
 	checkSum = checksum(ack, 0)
 	ack =  str(checkSum) + ";" + ack
 	return ack
 
-
-
+#Função principal, para tratamento dos pacotes recebidos
 def main():
 	
-	if (len(sys.argv) > 3):
+	#No nosso projeto, obrigatoriamente os argumentos devem seguir o seguinte padrão:
+	#receptor <sender hostname> <sender-porta> <filename> Pl PC
+	if (len(sys.argv) > 5):
 		nomeHost = sys.argv[1]
 		numPort = int(sys.argv[2])
 		nomeArq = sys.argv[3]
 		PL = float(sys.argv[4])
 		PC = float(sys.argv[5])
-		
-
-		#print len(nomeArq)
-		#msgInicial = "0;" + nomeArq
 		msgInicial = nomeArq
-		#estabelecendo conexao antes de inicializar a transmissao dos dados
+		#estabelecendo uma espécie de "conexão" antes de inicializar a transmissao dos dados, representada pela 
+		#requisição do arquivo
+		#criando um socket UDP
 		receptorSocket = socket(AF_INET, SOCK_DGRAM)
 		receptorSocket.sendto(msgInicial, (nomeHost, numPort))
 		print "Requisitando arquivo " + msgInicial + " para o servidor " + nomeHost + " na porta " + str(numPort)
+		#inicializando as variáveis que serão usadas para controle da comunicação
+		#nroSeqEsperado representa o número de sequência que o receptor está esperando. Inicialmente, ele é 0, pois
+		# é o primeiro número que se espera. A medida que forem sendo recebidos outros pacotes, com os números de 
+		#sequência na ordem correta, o nroSeqEsperado é atualizado com o próximo valor de número de sequência que
+		#se espera
 		nroSeqEsperado = 0
 		ultimoAck = 0
 		ack = makeAck(ultimoAck)
