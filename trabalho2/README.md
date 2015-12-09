@@ -181,8 +181,8 @@ Este é o código responsável por enviar o nome de um arquivo que deseja recebe
 * #### Calculo do checksum
 Uma vez que o receptor deverá receber as mensagens, ele também deverá fazer o cálculo do checksum para ver se a mensagem obtida está corropida, garantindo assim um recebimento mais seguro do arquivo solicitado. Utilizará as mesmas funções descritas anteriormente.
 
-* #### Envio e recebimento dos ACKs
-Uma vez que o receptor envia e recebe mensagens, ele deve receber e enviar ACKs para informar e ser informado sobre o recebimento de mensagens. A formação e envio dos ACKs, tanto para o emissor como para o receptor, também é feito formulando-se pacotes que serão enviados. Basicamente, utiliza-se uma função para criação do pacote do ack, que recebe como parâmetro o número do ack, que é correspondente ao número de sequência que foi recebido por último, sem perda nem corrupção, e na ordem. O pacote é simplesmente formado por um campo de checksum e um campo com o número do ack.
+* #### Envio dos ACKs
+Uma vez que o receptor recebe mensagens do emissor, ele deve enviar os ACKs correspondentes para informar sobre o recebimento correto das mensagens. O envio dos ACKs é feito formulando-se pacotes que serão enviados para o emissor. Basicamente, utiliza-se uma função para criação do pacote do ack, que recebe como parâmetro o número do ack, que é correspondente ao número de sequência que foi recebido por último, sem perda nem corrupção, e na ordem. O pacote é simplesmente formado por um campo de checksum e um campo com o número do ack.
 ```python
 def makeAck(numAck):
 	ack = str(numAck)
@@ -207,6 +207,8 @@ def mySendTo(numAck, ack, receptorSocket, nomeHost, numPort, probPerda, probCorr
 	else:
 		receptorSocket.sendto(ack, (nomeHost, numPort))
 ```
+Vale lembrar que não é necessário que o emissor envie um ACK quando da requisição enviada pelo receptor. Essa requisição é apenas uma forma de fazer uma conexão entre o próprio receptor e o emissor e, portanto, não há necessidade de envio de ACKs pelo emissor.
+
 Algumas outras funções relacionadas ao receptor está na verificação de corrupção, junção dos pacotes para a formação do arquivo final requisitado, pedir o reenvio de determinados pacotes de acordo com o número da sequência (cujo reenvio será feito pelo emissor).
 
 #### Para a execução do receptor.py, basta colocar o nome do arquivo, o hostname e a porta utilizada pelo emissor, além do nome do arquivo desejado, todos como parâmetro. Por exemplo: "python receptor.py <0.0.0.0> <80> <myFile.jpg>".
@@ -224,8 +226,11 @@ def topologia():
 	net.start()
 	CLI( net )
 	net.stop()
+
 topologia()
 ```
+Para maiores detalhes sobre a topologia, vidde arquivo topologia.py que contém ótimos comentários e instruções que ajudarão em qualquer dúvida.
+
 * #### Mensagens geradas
 
 * print "Requisitando arquivo " + msgInicial + " para o servidor " + nomeHost + " na porta " + str(numPort)
