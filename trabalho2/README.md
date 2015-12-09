@@ -19,7 +19,7 @@ Este código atuará como um servidor, ou seja, receberá uma solicitação (men
 
 	Uma vez solicitado um arquivo pelo cliente, o emissor será responsável por criar pacotes, ou seja, pequenos fragmentos do arquivo para serem enviados, caso o arquivo solicitado exista. Abaixo, o trecho de código responsável pela quebra da mensagem de acordo  com o tamanho do pacote:
     
- ```python
+```python
     def dividirMensagem(tamanhoPacote, mensagem):
 
 		pacotes = []
@@ -39,14 +39,14 @@ Este código atuará como um servidor, ou seja, receberá uma solicitação (men
 
 	Após a geração dos pacotes, deve-se gerar um cabeçalho para cada pacote para que a rede possa ser informada sobre algumas características de envio do pacote e sobre o pacote sendo enviado, uma vez que estamos utilizando um protocolo UDP.
     
-	```python
+```python    
 	def gerarMensagem(numS, pacote):
 		pacoteSemCheckSum = str(numS) + ";" + pacote + ";"
 		valorCheckSum = checksum(pacoteSemCheckSum, 0)
 		res = str(valorCheckSum) + ";" + pacoteSemCheckSum
 
 		return res        
-	```
+```
     
  A função acima é a responsável por gerar o cabeçalho dos pacotes, utilizando os valores de número de sequência e o pacote enviados por parâmetro. Observe que as informações contidas no cabeçalho são:
  * o número de sequência;
