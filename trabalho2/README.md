@@ -31,7 +31,7 @@ Este código atuará como um servidor, ou seja, receberá uma solicitação (men
 
 		return pacotes
   ```
-  A função acima é a responsável dividir a a mensagem no tamanho definido do pacote e salvá-la em um vetor de string. Como a mensagem deverá ser recebida em uma ordem correta para posterior montagem do arquivo, utilizou-se um número de sequência para determinar a ordem gerada dos pacotes. No nosso código, o indice do vetor vai representar o numero de sequência do pacote.
+  A função acima é a responsável por dividir a mensagem no tamanho definido do pacote e salvá-la em um vetor de string. Como a mensagem deverá ser recebida em uma ordem correta para posterior montagem do arquivo, utilizou-se um número de sequência para determinar a ordem gerada dos pacotes. No nosso código, o indice do vetor vai representar o número de sequência do pacote.
   
 * #### Inserir informações no cabeçalho de cada pacote antes de enviá-lo
 
@@ -49,6 +49,8 @@ Este código atuará como um servidor, ou seja, receberá uma solicitação (men
  A função acima é a responsável por gerar o cabeçalho dos pacotes, utilizando os valores de número de sequência e o pacote enviados por parâmetro. Observe que as informações contidas no cabeçalho são:
  * o número de sequência;
  * o número de checksum.
+ 
+Nosso cabeçalho foi mantido o mais simples possível, apenas colocando as informações que são necessárias para o controle da transmissão confiável.
   
 * #### Gerar o checksum das informações contidas no pacote
 
@@ -70,13 +72,32 @@ O checksum, basicamente, deverá fazer uma operação de adição nos bits do pa
    		if(opcao == 0):
    			return ~s & 0xffff
 		else:
-			return s & 0xffff   
+			return s & 0xffff 
 ```
-Para a verificação do checksum, basta compará-lo com o número 0xffff. Caso algum valor seja diferente de 1, o checksum indica um erro.
+
+Para a verificação do checksum, basta comparar a soma dos bits da mensagem somado ao valor de checksum no pacote com o número 0xffff. Caso algum valor seja diferente de 1, o checksum indica um erro.
+
+#### Funcionamento e algumas restrições
+
+O emissor abre o arquivo solicitado pelo receptor e, caso exista, faz a leitura de todo o arquivo em uma variável do tipo String. Quando trata-se de um arquivo muito grande, pode ocorrer um erro, pois existe um limite que a String em Python pode suportar, esse limite depende da memória RAM de cada computador. Mais informações: http://stackoverflow.com/questions/7134338/max-size-of-a-file-python-can-open
+
+Após abrir o arquivo e passar para uma String todo o contéudo dele, chega o momento da dividisão em pacotes de um tamanho já definido na variável 'tamanhoPacote'. Acontece a divisão dos pacotes como foi aprensentado na seção 'dividir o arquivo solicitado em pacotes' e, logo depois, começa o envio com o algoritmo Go-Back-N.
+
+É importante destacar como funciona quando acaba de enviar todos os pacotes, inicialmente é realizado um join na thread que recebe ACKs para que o emissor só pare de aguardar o recebimento do ACK quando todos os ACKs forem recebidos, ou seja o ACK recebido é igual ao último número de sequência (len(pacotes) - 1). Após a finalização dessa thread de recebimento, o emissor envia um número de sequência -1, informando que o fim do arquivo chegou e o receptor deve parar de aguardar recebimento de pacote. Fazendo assim com que o emissor possa voltar a ficar aguardando alguma nova solicitação. Observe abaixo o trecho de código que trata isso
+
+```python
+	t_receptor.join()
+	signal.alarm(0)
+	numSeq = -1
+	res = gerarMensagem(numSeq, "FIM")	
+       print "Enviando pacote de dados de finalizacao da conexão."				    	servidorSocket.sendto(res, enderecoReceptor)
+	arquivo.close()
+
+```
 
 #### Outras funcionalidades
 
-Além das funções citadas acima, o emissor também será responsável por receber ACKs (acknowledgments), que são os responsáveis por informar que o receptor recebeu a mensagem (pacote).
+Além das funções citadas acima, o emissor deve estar sempre pronto para receber ACKs (acknowledgments), que são os responsáveis por informar à algum outro host sobre o recebimento de algum sinal. A função de receber o ack foi colocada em uma thread separada para que o emissor funcionasse de acordo com o protocolo go-back-n, ou seja, ele não fica parado esperando pelos acks. Esses acks são confirmados em uma trhead rodando em backend, que vai apenas alterar a base da nossa janela.
 ```python
 def receberAck():
 
@@ -116,7 +137,8 @@ def receberAck():
 		else:
 			print "Corrupcao no ack recebido!"
 ```
-Também, é definido mensagens que aparecerão na  tela, informando os passos de sua execução, como, por exemplo: print "Enviando pacote de dados de finalizacao da conexão." Outra funcionalidade do emissor é uma função que a partir da probabilidade informada verifica se deve ocorrer perda, corrupção ou o envio normal de um determinado pacote. Isso ocorre graças a um número inteiro utilizado para simular essa probabilidade. Após isso fará o envio da mensagem normal, ou corrompida, ou não fará o envio caso seja perda. A função está definida abaixo: 
+
+Também, são definidas mensagens que aparecerão na  tela, informando os passos de sua execução, como, por exemplo: print "Enviando pacote de dados de finalizacao da conexão." Outra funcionalidade do emissor é uma função que a partir da probabilidade informada verifica se deve ocorrer perda, corrupção ou o envio normal de um determinado pacote. Isso ocorre graças a um número inteiro utilizado para simular essa probabilidade. Após isso fará o envio da mensagem normal, ou corrompida, ou não fará o envio caso seja perda. A função está definida abaixo: 
 ```  python
 def mySendTo(nroSeq, res, enderecoReceptor, probPerda, probCorrupcao):
 	if(probPerda < 1):
@@ -135,8 +157,7 @@ def mySendTo(nroSeq, res, enderecoReceptor, probPerda, probCorrupcao):
 	else:
 		servidorSocket.sendto(res, enderecoReceptor)
 ```  
-
-* #### Mensagens geradas para 
+* #### Mensagens geradas 
 	* res = str(valorCheckSum) + ";" + pacoteSemCheckSum
 	* print "Reenviando pacote de dados com cabecalho: " + res + "/" + str(len(pacotes))
 	* print "Corrupcao no ack recebido!"
@@ -152,15 +173,16 @@ def mySendTo(nroSeq, res, enderecoReceptor, probPerda, probCorrupcao):
 
 #### Para a execução do emissor.py, basta colocar o nome do arquivo com a porta com que se deseja que o emissor envie e receba mensagens, a probabilidade de perda e de corrupção desejada. Por exemplo: "python emissor.py <80> <0.4> <0.1>", em que será utilizada a porta 80, a probabilidade de perda é 0.4 e de corrupção 0.1". 
 
+
 ### Receptor.py (O Cliente)
 
-Este é o código responsável por enviar o nome de um arquivo que deseja receber do emissor e é aquele que irá receber o código do emissor. Ele também é responsável por enviar pacotes de acks para indicar ao emissor que o pacote com o número de sequência indicado pelo ack foi recebido.
+Este é o código responsável por enviar o nome de um arquivo que deseja receber do emissor e é aquele que irá receber o código do emissor.
 
 * #### Calculo do checksum
 Uma vez que o receptor deverá receber as mensagens, ele também deverá fazer o cálculo do checksum para ver se a mensagem obtida está corropida, garantindo assim um recebimento mais seguro do arquivo solicitado. Utilizará as mesmas funções descritas anteriormente.
 
 * #### Envio e recebimento dos ACKs
-Uma vez que o receptor envia e recebe mensagens, ele deve enviar ACKs para informar  sobre o recebimento de mensagens. A formação e envio dos ACKs, é feita formulando-se pacotes que serão enviados. Basicamente, utiliza-se uma função para criação do pacote do ack, que recebe como parâmetro o número do ack, que é correspondente ao número de sequência que foi recebido por último, sem perda nem corrupção, e na ordem. O pacote é simplesmente formado por um campo de checksum e um campo com o número do ack.
+Uma vez que o receptor envia e recebe mensagens, ele deve receber e enviar ACKs para informar e ser informado sobre o recebimento de mensagens. A formação e envio dos ACKs, tanto para o emissor como para o receptor, também é feito formulando-se pacotes que serão enviados. Basicamente, utiliza-se uma função para criação do pacote do ack, que recebe como parâmetro o número do ack, que é correspondente ao número de sequência que foi recebido por último, sem perda nem corrupção, e na ordem. O pacote é simplesmente formado por um campo de checksum e um campo com o número do ack.
 ```python
 def makeAck(numAck):
 	ack = str(numAck)
@@ -187,7 +209,7 @@ def mySendTo(numAck, ack, receptorSocket, nomeHost, numPort, probPerda, probCorr
 ```
 Algumas outras funções relacionadas ao receptor está na verificação de corrupção, junção dos pacotes para a formação do arquivo final requisitado, pedir o reenvio de determinados pacotes de acordo com o número da sequência (cujo reenvio será feito pelo emissor).
 
-#### Para a execução do receptor.py, é necessário colocar o nome do arquivo (receptor.py), o hostname e a porta utilizada pelo emissor, além do nome do arquivo desejado, a probabilidade de perda (valor decimal entre 0.0 e 0.4) e a probabilidade de corrupção (seguindo mesma regra da perda). Por exemplo: "python receptor.py <0.0.0.0> <80> <myFile.jpg> 0.2 0.2".
+#### Para a execução do receptor.py, basta colocar o nome do arquivo, o hostname e a porta utilizada pelo emissor, além do nome do arquivo desejado, todos como parâmetro. Por exemplo: "python receptor.py <0.0.0.0> <80> <myFile.jpg>".
 
 ### Topologia
 
