@@ -13,7 +13,7 @@ No nosso projeto, implementamos um protocolo simples de controle de congestionam
 
 ### Emissor.py (servidor)
 
-Este código atuará como um servidor, ou seja, receberá uma solicitação (mensagem) de um cliente e então enviará o arquivo solicitado pelo cliente via UDP. Nosso código, além do envio da solicitação do arquivo para o cliente, será responsável pelas seguintes funções:
+	Este código atuará como um servidor, ou seja, receberá uma solicitação (mensagem) de um cliente e então enviará o arquivo solicitado pelo cliente via UDP. Nosso código, além do envio da solicitação do arquivo para o cliente, será responsável pelas seguintes funções:
 
 #### Dividir o arquivo solicitado em pacotes
 
