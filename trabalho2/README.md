@@ -13,11 +13,11 @@ No nosso projeto, implementamos um protocolo simples de controle de congestionam
 
 ### Emissor.py (servidor)
 
-	Este código atuará como um servidor, ou seja, receberá uma solicitação (mensagem) de um cliente e então enviará o arquivo solicitado pelo cliente via UDP. Nosso código, além do envio da solicitação do arquivo para o cliente, será responsável pelas seguintes funções:
+Este código atuará como um servidor, ou seja, receberá uma solicitação (mensagem) de um cliente e então enviará o arquivo solicitado pelo cliente via UDP. Nosso código, além do envio da solicitação do arquivo para o cliente, será responsável pelas seguintes funções:
 
 #### Dividir o arquivo solicitado em pacotes
 
-	Uma vez solicitado um arquivo pelo cliente, o emissor será responsável por criar pacotes, ou seja, pequenos fragmentos do arquivo para serem enviados, caso o arquivo solicitado exista. Abaixo, o trecho de código responsável pela quebra da mensagem de acordo  com o tamanho do pacote:
+Uma vez solicitado um arquivo pelo cliente, o emissor será responsável por criar pacotes, ou seja, pequenos fragmentos do arquivo para serem enviados, caso o arquivo solicitado exista. Abaixo, o trecho de código responsável pela quebra da mensagem de acordo  com o tamanho do pacote:
     
 ```python
     def dividirMensagem(tamanhoPacote, mensagem):
@@ -37,7 +37,7 @@ No nosso projeto, implementamos um protocolo simples de controle de congestionam
   
 #### Inserir informações no cabeçalho de cada pacote antes de enviá-lo
 
-	Após a geração dos pacotes, deve-se gerar um cabeçalho para cada pacote para que a rede possa ser informada sobre algumas características de envio do pacote e sobre o pacote sendo enviado, uma vez que estamos utilizando um protocolo UDP.
+Após a geração dos pacotes, deve-se gerar um cabeçalho para cada pacote para que a rede possa ser informada sobre algumas características de envio do pacote e sobre o pacote sendo enviado, uma vez que estamos utilizando um protocolo UDP.
     
 ```python    
 	def gerarMensagem(numS, pacote):
