@@ -14,7 +14,8 @@ No nosso projeto, implementamos um protocolo simples de controle de congestionam
 ### Emissor.py (servidor)
 
 Este código atuará como um servidor, ou seja, receberá uma solicitação (mensagem) de um cliente e então enviará o arquivo solicitado pelo cliente via UDP. Nosso código, além do envio da solicitação do arquivo para o cliente, será responsável pelas seguintes funções:
-* #### Dividir o arquivo solicitado em pacotes
+
+#### Dividir o arquivo solicitado em pacotes
 
 	Uma vez solicitado um arquivo pelo cliente, o emissor será responsável por criar pacotes, ou seja, pequenos fragmentos do arquivo para serem enviados, caso o arquivo solicitado exista. Abaixo, o trecho de código responsável pela quebra da mensagem de acordo  com o tamanho do pacote:
     
@@ -33,7 +34,7 @@ Este código atuará como um servidor, ou seja, receberá uma solicitação (men
   ```
   A função acima é a responsável por dividir a mensagem no tamanho definido do pacote e salvá-la em um vetor de string. Como a mensagem deverá ser recebida em uma ordem correta para posterior montagem do arquivo, utilizou-se um número de sequência para determinar a ordem gerada dos pacotes. No nosso código, o indice do vetor vai representar o número de sequência do pacote.
   
-* #### Inserir informações no cabeçalho de cada pacote antes de enviá-lo
+#### Inserir informações no cabeçalho de cada pacote antes de enviá-lo
 
 	Após a geração dos pacotes, deve-se gerar um cabeçalho para cada pacote para que a rede possa ser informada sobre algumas características de envio do pacote e sobre o pacote sendo enviado, uma vez que estamos utilizando um protocolo UDP.
     
@@ -51,8 +52,8 @@ Este código atuará como um servidor, ou seja, receberá uma solicitação (men
  * o número de checksum.
  
 Nosso cabeçalho foi mantido o mais simples possível, apenas colocando as informações que são necessárias para o controle da transmissão confiável.
-  
-* #### Gerar o checksum das informações contidas no pacote
+
+#### Gerar o checksum das informações contidas no pacote
 
 Uma vez que estamos utilizando o protocolo UDP, o envio das informações não é feita de forma a prover determinada segurança em perdas ou alterações nas mensagens enviadas. Por isso, para garantir uma maior confiabilidade no envio e entrega correta dos dados, tanto nosso Servidor quanto nosso Cliente farão o que chamamos de checksum dos bits contidos nos pacotes. Isso garantirá que o receptor saiba se a mensagem sofreu alguma alteração em seu envio e poderá retornar para o emissor que ocorreu alguma falha na mensagem. 
 
@@ -157,7 +158,7 @@ def mySendTo(nroSeq, res, enderecoReceptor, probPerda, probCorrupcao):
 	else:
 		servidorSocket.sendto(res, enderecoReceptor)
 ```  
-* #### Mensagens geradas 
+#### Mensagens geradas 
 	* res = str(valorCheckSum) + ";" + pacoteSemCheckSum
 	* print "Reenviando pacote de dados com cabecalho: " + res + "/" + str(len(pacotes))
 	* print "Corrupcao no ack recebido!"
@@ -178,10 +179,10 @@ def mySendTo(nroSeq, res, enderecoReceptor, probPerda, probCorrupcao):
 
 Este é o código responsável por enviar o nome de um arquivo que deseja receber do emissor e é aquele que irá receber o código do emissor.
 
-* #### Calculo do checksum
+#### Calculo do checksum
 Uma vez que o receptor deverá receber as mensagens, ele também deverá fazer o cálculo do checksum para ver se a mensagem obtida está corropida, garantindo assim um recebimento mais seguro do arquivo solicitado. Utilizará as mesmas funções descritas anteriormente.
 
-* #### Envio dos ACKs
+#### Envio dos ACKs
 Uma vez que o receptor recebe mensagens do emissor, ele deve enviar os ACKs correspondentes para informar sobre o recebimento correto das mensagens. O envio dos ACKs é feito formulando-se pacotes que serão enviados para o emissor. Basicamente, utiliza-se uma função para criação do pacote do ack, que recebe como parâmetro o número do ack, que é correspondente ao número de sequência que foi recebido por último, sem perda nem corrupção, e na ordem. O pacote é simplesmente formado por um campo de checksum e um campo com o número do ack.
 ```python
 def makeAck(numAck):
@@ -211,6 +212,17 @@ Vale lembrar que não é necessário que o emissor envie um ACK quando da requis
 
 Algumas outras funções relacionadas ao receptor está na verificação de corrupção, junção dos pacotes para a formação do arquivo final requisitado, pedir o reenvio de determinados pacotes de acordo com o número da sequência (cujo reenvio será feito pelo emissor).
 
+#### Mensagens geradas
+
+* print "Requisitando arquivo " + msgInicial + " para o servidor " + nomeHost + " na porta " + str(numPort)
+* print "A soma do checksum é: " + str(soma)
+* print "Numero de sequencia recebido: " + str(nroSeqRecebido) + ". Esperava-se o numero de sequencia: " + str(nroSeqEsperado)
+* print "Arquivo nao encontrado"
+* print "Enviando Ack " + str(nroSeqRecebido)
+* print "Reenviando Ack " + str(ultimoAck)
+* print "Corrupcao detectada no pacote!"
+* print "Espera-se os argumentos: hostname do rementente, numero de porta do rementente, nome do arquivo, probabilidade de perda (um numero entre 0.0 e 0.4, com uma casa decimal), e probabilidade de corrupcao (um numero entre 0.0 e 0.4, com uma casa decimal)"
+
 #### Para a execução do receptor.py, basta colocar o nome do arquivo, o hostname e a porta utilizada pelo emissor, além do nome do arquivo desejado, todos como parâmetro. Por exemplo: "python receptor.py <0.0.0.0> <80> <myFile.jpg>".
 
 ### Topologia
@@ -230,17 +242,6 @@ def topologia():
 topologia()
 ```
 Para maiores detalhes sobre a topologia, vidde arquivo topologia.py que contém ótimos comentários e instruções que ajudarão em qualquer dúvida.
-
-* #### Mensagens geradas
-
-* print "Requisitando arquivo " + msgInicial + " para o servidor " + nomeHost + " na porta " + str(numPort)
-* print "A soma do checksum é: " + str(soma)
-* print "Numero de sequencia recebido: " + str(nroSeqRecebido) + ". Esperava-se o numero de sequencia: " + str(nroSeqEsperado)
-* print "Arquivo nao encontrado"
-* print "Enviando Ack " + str(nroSeqRecebido)
-* print "Reenviando Ack " + str(ultimoAck)
-* print "Corrupcao detectada no pacote!"
-* print "Espera-se os argumentos: hostname do rementente, numero de porta do rementente, nome do arquivo, probabilidade de perda (um numero entre 0.0 e 0.4, com uma casa decimal), e probabilidade de corrupcao (um numero entre 0.0 e 0.4, com uma casa decimal)"
 
 # Resultados
 
