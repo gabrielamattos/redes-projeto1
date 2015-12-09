@@ -19,7 +19,7 @@ Este código atuará como um servidor, ou seja, receberá uma solicitação (men
 
 	Uma vez solicitado um arquivo pelo cliente, o emissor será responsável por criar pacotes, ou seja, pequenos fragmentos do arquivo para serem enviados, caso o arquivo solicitado exista. Abaixo, o trecho de código responsável pela quebra da mensagem de acordo  com o tamanho do pacote:
     
-    ```python
+ ```python
     def dividirMensagem(tamanhoPacote, mensagem):
 
 		pacotes = []
@@ -31,7 +31,8 @@ Este código atuará como um servidor, ou seja, receberá uma solicitação (men
           pacotes.append(mensagem[inicio:fim])
 
 		return pacotes
-  ```
+```
+  
   A função acima é a responsável por dividir a mensagem no tamanho definido do pacote e salvá-la em um vetor de string. Como a mensagem deverá ser recebida em uma ordem correta para posterior montagem do arquivo, utilizou-se um número de sequência para determinar a ordem gerada dos pacotes. No nosso código, o indice do vetor vai representar o número de sequência do pacote.
   
 #### Inserir informações no cabeçalho de cada pacote antes de enviá-lo
