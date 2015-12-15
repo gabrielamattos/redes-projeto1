@@ -5,7 +5,7 @@
 * Rodolfo Barcelar 495921
 
 # Vídeo Projeto Funcionando
-!(https://youtu.be/Cjkkcfvcork)
+https://youtu.be/Cjkkcfvcork
 
 
 # Introdução e Objetivos
